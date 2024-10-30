@@ -1,0 +1,31 @@
+.address {
+    margin: 1rem;
+
+    .input {
+        margin-bottom: 1rem;
+    }
+
+    button {}
+}
+
+.list_address {
+    background-color: #FAF6F3;
+    margin-bottom: 5rem;
+
+    .car {
+
+        &__address {
+            background-color: white;
+            padding: 1rem;
+            margin: 1rem;
+            text-align: left;
+            border-left: solid 2px rgb(2, 109, 48);
+
+            label {
+                align-items: flex-end;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    }
+}

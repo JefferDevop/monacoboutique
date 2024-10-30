@@ -1,0 +1,50 @@
+{
+  "name": "monacoboutique",
+  "version": "6.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "@dotdev/next-boost": "^2.1.1",
+    "@mercadopago/sdk-js": "^0.0.3",
+    "@mercadopago/sdk-react": "^0.0.19",
+    "@tanstack/react-query": "^5.59.16",
+    "@types/jwt-decode": "^3.1.0",
+    "bootstrap": "^5.3.3",
+    "classnames": "^2.5.1",
+    "create-next-pwa": "^3.4.3",
+    "formik": "^2.4.6",
+    "install": "^0.13.0",
+    "jwt-decode": "3.1.2",
+    "lodash": "^4.17.21",
+    "next": "14.2.3",
+    "next-boost": "^0.12.0",
+    "next-compose-plugins": "^2.2.1",
+    "next-images": "^1.8.5",
+    "next-progressbar": "^1.0.0",
+    "next-pwa": "^5.6.0",
+    "nextjs-progressbar": "^0.0.16",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-dropzone": "^14.2.3",
+    "react-dropzone-component": "^3.2.0",
+    "react-icons": "^5.2.1",
+    "react-intl": "^6.4.4",
+    "react-player": "^2.13.0",
+    "react-responsive-carousel": "^3.2.23",
+    "react-toastify": "^10.0.5",
+    "reactstrap": "^9.2.2",
+    "sass": "^1.77.1",
+    "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "browserslist": "^4.22.1"
+  }
+}

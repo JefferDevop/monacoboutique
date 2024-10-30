@@ -1,0 +1,85 @@
+.list {
+  margin: 1rem 1rem ;
+
+  .totales {
+    margin: 1rem 0;
+    text-align: end;
+    font-weight: 600;
+  }
+
+  .card {
+   
+    margin-top: 2rem;
+    border-radius: 0.5rem;
+
+    .body {
+      &__content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .button {
+          padding: 0.5rem;
+        }
+
+        p {
+          font-size: 0.8em;
+        }
+
+        .price {
+          text-align: right;
+          // background-color: rgb(230, 230, 230);
+          // padding: 0.2rem;
+          // border-radius: 0.5rem;
+
+          .unid {
+            color: rgb(171, 171, 171);
+          }
+
+          .total {
+            font-weight: 600;
+          }
+        }
+
+        .sizecolor {
+          text-align: left;
+
+          label {
+            text-transform: uppercase;
+            font-weight: 500;
+            // border: 1px solid rgb(255, 255, 255);
+            // padding: 0.2rem;            
+          }
+        }
+      }
+    }
+
+    .foot {
+      p {
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  img {
+    border-radius: 0.5rem;
+    height: 5rem;
+    max-width: 4rem;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+
+  .footButton{   
+    button:first-of-type {
+      background-color: #faf8f3;
+      margin: 1rem 0;
+      border: none;
+    }
+    button{
+      margin: 1rem 0;
+      color: black;
+    }
+   
+  }
+}

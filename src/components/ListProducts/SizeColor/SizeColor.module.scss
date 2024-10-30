@@ -1,0 +1,55 @@
+.sizeColor {
+text-align: left;
+padding: 0 1rem;
+
+.price{
+  text-align: center;
+}
+
+  &__container {
+
+    .quantity {
+      // align-items: center;
+      // display: flex;
+      // flex-direction: column;
+
+      div {
+        display: flex;
+        align-items: center;
+      
+        p{
+          padding: 1rem;
+        }
+      }
+    }
+
+    .button {
+      margin: 5px;
+      text-transform: uppercase;
+      background-color: white;
+    }
+
+    button.active {
+      color: rgb(0, 0, 0);
+    }
+
+    button.inactive {
+      color: #8d8d8d7d;
+      cursor: not-allowed;
+    }
+
+    button.selected {
+      background-color: #2e2f3d;
+      color: white;
+    }
+
+    h5 {
+      font-size: 1em;
+      margin-top: 0.5rem;
+    }
+  }
+
+
+
+
+}

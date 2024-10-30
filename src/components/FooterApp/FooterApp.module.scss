@@ -1,0 +1,32 @@
+.btnWhatsapp {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  justify-content: center;
+  z-index: 2;
+
+  .title1 {
+    background-color: rgb(172, 171, 171);
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: 50vw;
+    padding: 0.4rem;
+    text-align: center;
+    color: rgb(0, 0, 0);
+  }
+
+  .title2 {
+    background-color: rgb(255, 255, 255);
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: 50vw;
+    padding: 0.4rem;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    
+    p {
+      color: white;
+    }
+
+  }
+}
