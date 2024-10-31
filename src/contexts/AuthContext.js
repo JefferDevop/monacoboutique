@@ -8,7 +8,7 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
+  const [accesToken, setAccessToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const logout = useCallback(() => {
@@ -48,13 +48,13 @@ export function AuthProvider({ children }) {
 
   const authData = useMemo(
     () => ({
-      accessToken,
+      accesToken,
       user,
       login,
       logout,
       loading,
     }),
-    [accessToken, user, login, logout, loading]
+    [accesToken, user, login, logout, loading]
   );
 
   if (loading) return null; // No renderiza hasta que el estado de loading sea false.

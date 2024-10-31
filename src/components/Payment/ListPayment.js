@@ -38,6 +38,8 @@ export function ListPayment(props) {
   const { decreaseCart, incrementCart, deleteAllCart  } = useCart();
   const [show, setShow] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+
+
   const [envio, setEnvio] = useState(() => {
     if (!address[0]?.city || address[0]?.city === "") {
       return 0; // Si no hay ciudad, el valor inicial es 0
@@ -47,6 +49,8 @@ export function ListPayment(props) {
       return 15000; // Para cualquier otra ciudad, el valor inicial es 15000
     }
   });
+
+
   const [isModalOpen2, setModalOpen2] = useState(false);
   const [formData, setFormData] = useState(null);
   const [newAddress, setNewAddress] = useState(null);
@@ -56,6 +60,8 @@ export function ListPayment(props) {
     Array.isArray(address) && address.length > 0 ? address[0] : null
   );
 
+
+
   const payment = async (product, address) => {
     
     try {
@@ -64,7 +70,7 @@ export function ListPayment(props) {
   // if (storedInitPoint) {
   //  window.location.href = storedInitPoint;
   //    return;
-   //   }
+   //   }   
 
       const response = await paymentCtrl.createPayload(
         product,
@@ -193,6 +199,8 @@ export function ListPayment(props) {
   };
 
   useEffect(() => {
+   
+     
     const addNewAddress = async () => {
       if (user && formData) {
         try {
@@ -222,7 +230,7 @@ export function ListPayment(props) {
         <h2>Finalizar Compra</h2>
 
         <Form onSubmit={formik.handleSubmit}>
-          {(address[0].length < 1 || address[0]?.name === "Apellidos") && (
+          {(address?.length < 1 || address?.name === "Apellidos") && (
             <>
               <FormGroup floating>
                 <Input
@@ -378,7 +386,7 @@ export function ListPayment(props) {
               <p>Total a Pagar: $ {format(subtotal + envio)}</p>
             </div>
 
-            {address[0]?.name !== "Apellidos" && (
+            {!address && (
               <div className={styles.totales}>
                 <h3>Dirección de envío</h3>
 
@@ -419,6 +427,8 @@ export function ListPayment(props) {
           >
             Pagar
           </Button> */}
+
+          
           <Button block type="submit" color="secondary">
             Pagar
           </Button>

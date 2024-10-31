@@ -16,9 +16,10 @@ const authCtrl = new Auth();
 export default function PaymentPage() {
   const { user, accesToken, login } = useAuth();
   const { cart } = useCart();
-  const [products, setProducts] = useState([]); // Cambié a un array por consistencia
-  const [address, setAddress] = useState(null); // Inicializar en null para mejor control
+  const [products, setProducts] = useState([]); 
+  const [address, setAddress] = useState(""); //
   const [loading, setLoading] = useState(true);
+
 
   // Función para iniciar sesión temporalmente
   const loginUser = async () => {
@@ -40,7 +41,7 @@ export default function PaymentPage() {
     if (!user) {
       loginUser();
     }
-  }, []); // Dependencia `user`
+  }, []); 
 
   // Obtener productos del carrito
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function PaymentPage() {
   }, [cart]);
 
   // Obtener dirección del usuario
-  useEffect(() => {
+  useEffect(() => {    
     const fetchAddress = async () => {
       if (!user) return; // Asegurarse de que el usuario esté definido
       try {
@@ -87,6 +88,7 @@ export default function PaymentPage() {
 
   const hasProducts = products.length > 0; // Verificar si hay productos
 
+ 
   return (
     <BasicLayout>
       <Separator />
@@ -96,7 +98,7 @@ export default function PaymentPage() {
         hasProducts ? (
           <>
             <ListPayment addChange={setAddress} product={products} address={address} payMethod={'payMethod'} />
-            <Footer />
+       
           </>
         ) : (
           <NotFound title="Uppss... en este momento no hay productos para pagar"/>

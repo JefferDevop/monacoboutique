@@ -19,7 +19,7 @@ export function ListCategories({ categories }) {
 
           return (
             <div key={id} className={styles.card}>
-              <Link href={`/products/${slug}`} passHref>
+              <Link href={`/products/${slug}`} >
                 <Image
                   alt={`Imagen de ${name}`}
                   src={src}
