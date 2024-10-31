@@ -23,9 +23,8 @@ export function ListCategories({ categories }) {
                 <Image
                   alt={`Imagen de ${name}`}
                   src={src}
-                  width={130} // Especifica el ancho deseado
-                  height={200} // Especifica la altura deseada
-                
+                  width={130}
+                  height={200}
                 />
                 <h6>{name}</h6>
               </Link>

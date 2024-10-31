@@ -5,7 +5,7 @@ import { BASE_NAME } from "@/config/constants";
 import { useWhatsApp, useGallery, useCart } from "@/hooks";
 // import { toast } from "react-toastify";
 import { SizeColor } from "../ListProducts";
-import Link from "next/link";
+
 
 import { ImageCarousel } from "../ImageCarousel";
 
@@ -21,8 +21,8 @@ import {
 } from "reactstrap";
 
 import { BsWhatsapp } from "react-icons/bs";
-import { CiRead } from "react-icons/ci";
 import styles from "./DetailProduct.module.scss";
+import Delivery from "./Delivery";
 
 export function DetailProduct(props) {
   const { product, productInventory, relate } = props;
@@ -56,8 +56,6 @@ export function DetailProduct(props) {
     getGalleryByCode(data);
     window.scrollTo(0, 0);
   };
-
-  console.log(productData);
   
   //-----------------------------------------------
 
@@ -110,6 +108,8 @@ export function DetailProduct(props) {
   if (product) {
     return (
       <>
+
+
         <div className={styles.detailProduct}>
           {productData?.price_old > productData?.price1 && (
             <div className={styles.offer}>
@@ -178,7 +178,21 @@ export function DetailProduct(props) {
               <p>{productData?.description}</p>
             </div>
 
+
+
+
+
+
+
             <SizeColor propductTC={productInventory} getOffer={getOffer} />
+
+
+
+
+
+
+
+
 
             {hasItems && (
               <div className={styles.relate}>
@@ -233,28 +247,22 @@ export function DetailProduct(props) {
               </div>
             )}
 
-            <div className={styles.policies}>
-              <strong>
-                <p>TIEMPO DE ENTREGA</p>
-              </strong>
-              <ul>
-                <li>
-                  <p>Cali, el mismo día o el siguiente</p>
-                </li>
-                <li>
-                  <p>Nacional, de 4 a 5 días</p>
-                </li>
-              </ul>
 
-              <Link href="/police">
-                <p>
-                  <strong>
-                    POLITICAS DE CAMBIO <CiRead size={30} />
-                  </strong>
-                </p>
-              </Link>
-            </div>
+
+
+
+
+
+
+
+
+            <Delivery />
+
+
           </div>
+
+
+
 
           <Modal centered isOpen={isOpen} toggle={toggleModal}>
             <ModalHeader toggle={toggleModal}>Seleccione una Lìnea</ModalHeader>
@@ -275,7 +283,6 @@ export function DetailProduct(props) {
                 ))}
               </FormGroup>
             </ModalBody>
-
             <ModalFooter>
               <Button size="sm" outline color="secondary" onClick={toggleModal}>
                 Cancelar
@@ -285,6 +292,10 @@ export function DetailProduct(props) {
               </Button>
             </ModalFooter>
           </Modal>
+
+
+
+
         </div>
       </>
     );

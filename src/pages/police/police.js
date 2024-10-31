@@ -13,8 +13,6 @@ import { ChangePolicies, Footer, FooterApp, Separator } from "@/components";
           
          <ChangePolicies />
          <FooterApp title1={'Volver'} title2={'Inicio'} />
-         
-          <Footer />
         </BasicLayout>
       </>
     );
