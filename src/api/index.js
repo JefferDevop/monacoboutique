@@ -7,3 +7,4 @@ export * from "./token";
 export * from "./address";
 export * from "./payment";
 export * from "./sliders";
+export * from "./orders";
