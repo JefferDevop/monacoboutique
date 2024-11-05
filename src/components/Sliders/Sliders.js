@@ -26,8 +26,7 @@ export function Sliders({ gallery }) {
                   src={`${BASE_NAME}${item.image}`}
                   style={{ objectFit: "cover", width: "auto", height: "auto" }}
                   width={150} // Establece un ancho apropiado
-                  height={80} // Establece una altura apropiada                  
-                  // priority={index === 0} // Prioriza la primera imagen
+                  height={80} // Establece una altura apropiada                                  
                 />               
             </div>
           ))

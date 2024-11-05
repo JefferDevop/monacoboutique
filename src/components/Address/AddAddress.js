@@ -11,7 +11,7 @@ import styles from "./Address.module.scss";
 const addressCtrl = new Address();
 
 export function AddAddress(props) {
-  const { toggleModal2 } = props;
+  const { toggleModal2, toggleAddress } = props;
 
   const { accesToken, user } = useAuth();
 
@@ -21,9 +21,11 @@ export function AddAddress(props) {
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
+
         await addressCtrl.addAddress(formValue, user.id, accesToken);
 
         toggleModal2();
+        toggleAddress();
         toast.success("Address added successfully");
       } catch (error) {
         toast.error(error.message);
@@ -89,11 +91,11 @@ export function AddAddress(props) {
         <div className={styles.input}>
           <Input
             type="text"
-            name="celphone"
+            name="phone"
             placeholder="Teléfono"
-            value={formik.values.celphone}
+            value={formik.values.phone}
             onChange={formik.handleChange}
-            error={formik.errors.celphone}
+            error={formik.errors.phone}
           />
         </div>
         <div className={styles.input}>
@@ -122,7 +124,7 @@ function initialValues() {
     lastname: "",
     address: "",
     city: "",
-    celphone: "",
+    phone: "",
     email: "",
   };
 }
@@ -135,6 +137,6 @@ function validationSchema() {
     address: Yup.string().required(true),
     city: Yup.string().required(true),
     email: Yup.string().required(true),
-    celphone: Yup.string().required(true),
+    phone: Yup.string().required(true),
   });
 }

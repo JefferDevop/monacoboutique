@@ -49,7 +49,6 @@ export class User {
   }
 
     async addUserApi(data) {
-    
       try {
         const url = `${BASE_API}/api/users/`;
   
@@ -78,9 +77,5 @@ export class User {
         console.error("Error al crear un nuevo usuario:", error); 
         throw error; 
       }
-    }
-  
-
-
-  
+    }  
 }

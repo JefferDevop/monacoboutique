@@ -18,8 +18,7 @@ export function useGallery() {
         setGallery(updatedResult);
       
         
-      } else {
-        // Manejo de error o lógica según sea necesario
+      } else {       
         console.error("getGalleryByCode no devolvió un array");
       }
     } catch (error) {

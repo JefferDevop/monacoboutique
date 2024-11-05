@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { useCart, useAuth } from "@/hooks";
-import { Products, Address, User, Auth } from "@/api";
+import { useAuth, useCart } from "@/hooks";
+import { Auth } from "@/api";
 import {
   Separator,
   NotFound,
-  Footer,
-  ListPayment,
+    ListPayment,
 } from "@/components";
 import { BasicLayout } from "@/layouts";
 
-const productCtrl = new Products();
-const addressCtrl = new Address();
+// const productCtrl = new Products();
+// const addressCtrl = new Address();
 const authCtrl = new Auth();
 
 export default function PaymentPage() {
   const { user, accesToken, login } = useAuth();
-  const { cart } = useCart();
-  const [products, setProducts] = useState([]); 
-  const [address, setAddress] = useState(""); //
-  const [loading, setLoading] = useState(true);
-
+  const { cart, product, loading } = useCart();
+  // const [products, setProducts] = useState([]);
+  // const [loadingProducts, setLoadingProducts] = useState(true);
+  // const [address, setAddress] = useState("");
+  // const [loadingAddress, setLoadingAddress] = useState(true);
 
   // Función para iniciar sesión temporalmente
   const loginUser = async () => {
@@ -36,74 +35,92 @@ export default function PaymentPage() {
     }
   };
 
+
   // Comprobar el usuario y loguear si es necesario
   useEffect(() => {
     if (!user) {
       loginUser();
     }
-  }, []); 
+  }, [user]); 
+
+
+  //  // Función para cargar datos desde localStorage
+  //  const loadDataFromLocalStorage = () => {
+  //   // Obtener los productos y el estado de carga desde localStorage
+  //   const storedProducts = localStorage.getItem("cart_products");
+  //   const storedLoading = localStorage.getItem("global_loading") === "true";
+
+  //   // Parsear productos si existen en localStorage
+  //   setProducts(storedProducts ? JSON.parse(storedProducts) : []);
+  //   setLoadingProducts(storedLoading);
+  // };
+
+  // useEffect(() => {    
+  //   loadDataFromLocalStorage();
+
+  //   // Configurar escucha de almacenamiento para cambios en localStorage
+  //   const handleStorageChange = (event) => {
+  //     if (event.key === "cart_products" || event.key === "global_loading") {
+  //       loadDataFromLocalStorage();
+  //     }
+  //   };
+
+  //   window.addEventListener("storage", handleStorageChange);
+
+  //   // Limpiar el listener al desmontar el componente
+  //   return () => {
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, []);
+
+
 
   // Obtener productos del carrito
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true); // Iniciar carga
-      try {
-        const data = await Promise.all(cart.map(item => 
-          productCtrl.getProductByCode(item.id).then(response => ({
-            ...response,
-            quantity: item.quantity,
-          }))
-        ));
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false); // Finalizar carga
-      }
-    };
+  // useEffect(() => {
+  //   if (cart.length === 0) {
+  //     setLoadingProducts(false);
+  //     return;
+  //   }
 
-    if (cart.length > 0) { // Verificar que el carrito no esté vacío
-      fetchProducts();
-    } else {
-      setLoading(false); // Finalizar carga si el carrito está vacío
-    }
-  }, [cart]);
+  //   const fetchProducts = async () => {
+  //     setLoadingProducts(true);
+  //     try {
+  //       const data = await Promise.all(
+  //         cart.map(item =>
+  //           productCtrl.getProductByCode(item.id).then(response => ({
+  //             ...response,
+  //             quantity: item.quantity,
+  //           }))
+  //         )
+  //       );
+  //       setProducts(data);
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //     } finally {
+  //       setLoadingProducts(false);
+  //     }
+  //   };
 
-  // Obtener dirección del usuario
-  useEffect(() => {    
-    const fetchAddress = async () => {
-      if (!user) return; // Asegurarse de que el usuario esté definido
-      try {
-        const response = await addressCtrl.getAddress(accesToken, user.id);
-        setAddress(response);
-      } catch (error) {
-        console.error("Error fetching address:", error);
-      } finally {
-        setLoading(false); // Finalizar carga
-      }
-    };
+  //   fetchProducts();
+  // }, [cart]);
 
-    fetchAddress();
-  }, [accesToken, user]); // Dependencias
 
-  const hasProducts = products.length > 0; // Verificar si hay productos
+  // const isLoading = loadingProducts;
+  const hasProducts = product.length > 0;
 
- 
   return (
     <BasicLayout>
       <Separator />
       {loading ? (
         <h1>Cargando ...</h1>
+      ) : hasProducts ? (
+        <>
+          <ListPayment product={product} />
+        </>
       ) : (
-        hasProducts ? (
-          <>
-            <ListPayment addChange={setAddress} product={products} address={address} payMethod={'payMethod'} />
-       
-          </>
-        ) : (
-          <NotFound title="Uppss... en este momento no hay productos para pagar"/>
-        )
+        <NotFound title="Uppss... en este momento no hay productos para pagar" />
       )}
+  
     </BasicLayout>
   );
 }

@@ -13,436 +13,261 @@ import {
   Form,
   FormGroup,
 } from "reactstrap";
-import { ModalBasic } from "../Common";
-import { AddAddress } from "../Address";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Register } from "../Register";
-
 import { BASE_NAME } from "@/config/constants";
-
-import { AiFillPlusCircle } from "react-icons/ai";
-import { AiOutlineMinusCircle } from "react-icons/ai";
-
+import { AiFillPlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import styles from "./ListPayment.module.scss";
+import { AddAddress } from "../Address";
 
 const paymentCtrl = new Payment();
 const authCtrl = new Auth();
 const userCtrl = new User();
 const addressCtrl = new Address();
 
-export function ListPayment(props) {
-  const { accesToken, login, logout, user, loading } = useAuth();
-  const { addChange, product, address, payMethod } = props;
-  const { decreaseCart, incrementCart, deleteAllCart  } = useCart();
-  const [show, setShow] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
+export function ListPayment({ product }) {
+  const calculateShipping = (city) =>
+    city?.toLowerCase() === "cali" ? 12000 : 15000;
 
+  const { accesToken, login, logout, user } = useAuth();
+  const { decreaseCart, incrementCart, deleteAllCart } = useCart();
+  const [isLoading, setIsLoading] = useState(true)
 
-  const [envio, setEnvio] = useState(() => {
-    if (!address[0]?.city || address[0]?.city === "") {
-      return 0; // Si no hay ciudad, el valor inicial es 0
-    } else if (address[0]?.city.toLowerCase() === "cali") {
-      return 12000; // Si la ciudad es "Cali", el valor inicial es 12000
-    } else {
-      return 15000; // Para cualquier otra ciudad, el valor inicial es 15000
-    }
-  });
-
-
+  const [isAddressModalOpen, setAddressModalOpen] = useState(false);
   const [isModalOpen2, setModalOpen2] = useState(false);
-  const [formData, setFormData] = useState(null);
-  const [newAddress, setNewAddress] = useState(null);
-  // const [initialData, setInitialData] = useState(null);
+  const [changeAddress, setChangeAddress] = useState(false);
+  const [hasSetInitialAddress, setHasSetInitialAddress] = useState(false);
 
-  const [selectedAddress, setSelectedAddress] = useState(
-    Array.isArray(address) && address.length > 0 ? address[0] : null
+  const [formData, setFormData] = useState(null);
+  const [localAddress, setLocalAddress] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [envio, setEnvio] = useState(() =>
+    calculateShipping(selectedAddress?.city)
   );
 
 
-
-  const payment = async (product, address) => {
-    
-    try {
-  //   const storedInitPoint = localStorage.getItem("init_point");
-
-  // if (storedInitPoint) {
-  //  window.location.href = storedInitPoint;
-  //    return;
-   //   }   
-
-      const response = await paymentCtrl.createPayload(
-        product,
-        address,
-        accesToken
-      );
-      
-
-      if (response && response.init_point) {
-        localStorage.setItem("init_point", response.init_point);
-
-       window.location.href = response.init_point;
-       
-
-        //limpiar Carrito
-        deleteAllCart();
-        
-      
-      } else {
-        console.error("No se recibió una URL válida en la respuesta");
-      }
-    } catch (error) {
-      console.error("Error en el proceso de pago:", error);
-    }
-  };
-
-  const format = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Cambia 'es-ES' por tu configuración regional
-  };
-
-  // Calcular el subtotal del carrito
   const subtotal = product.reduce(
     (acc, item) => acc + item[0]?.price1 * item.quantity,
     0
   );
 
-  const toggleModal = () => {
-    setModalOpen(!isModalOpen);
-  };
+  useEffect(() => {
+    const handleGetAddress = async () => {
+      try {
+        const response = await addressCtrl.getAddress(accesToken, user.id);
+        setLocalAddress(response);
 
-  const onClose = () => setShow(!show);
+        if (!hasSetInitialAddress && response?.length > 0) {
+          setSelectedAddress(response?.[0] || null);
+          setHasSetInitialAddress(true);
+        }
+      } catch (error) {
+        console.error("Error al agregar la dirección:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const toggleModal2 = () => {
-    addChange();
-    setModalOpen2(!isModalOpen2);
+    handleGetAddress();
+  }, [addressCtrl, accesToken, user?.id]);
+
+
+ 
+
+
+
+
+  useEffect(() => {
+    if (user && formData) handleNewAddress();
+  }, [formData]);
+
+  const handleNewAddress = async () => {
+    try {
+      const response = await addressCtrl.addAddress(
+        formData,
+        user.id,
+        accesToken
+      );
+      // setFormData(null);
+
+      // addChange();
+      setSelectedAddress(response);
+      await processPayment(response.id);
+    } catch (error) {
+      console.error("Error al agregar la dirección:", error);
+    }
   };
 
   const selectecAddress = (address) => {
     setSelectedAddress(address);
 
-    setEnvio(calculateEnvio(address.city));
-    setModalOpen(!isModalOpen);
+    // setEnvio(calculateEnvio(address.city));
+    setAddressModalOpen(!isAddressModalOpen);
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await getDataFromDatabase(); // Llama a la función que trae los datos
-  //       setInitialData(response);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  const processPayment = async (addressId) => {
+    try {
+      const response = await paymentCtrl.createPayload(
+        product,
+        addressId,
+        accesToken
+      );
+      // localStorage.setItem("init_point", response.init_point);
+      window.location.href = response.init_point;
+       deleteAllCart();
+      console.log("pago",response);
+    } catch (error) {
+      console.error("Error en el proceso de pago:", error);
+    }
+  };
 
   const formik = useFormik({
-    initialValues: initialValues(address),
-    validationSchema: Yup.object(validationSchema()),
+    initialValues: getInitialValues(localAddress?.[0]),
+    // validationSchema: Yup.object(getValidationSchema()),
+    
     onSubmit: async (formValue) => {
-      try {
-        if (user.email === "hh@gmail.com") {
-          await logout();
-          const { email, password } = formValue;
-
-          await userCtrl.addUserApi({ email, password });
-
-          const response = await authCtrl.login({ email, password });
-          await login(response.access);
-
-          const newAddressData = {
-            title: "Principal",
-            name: formValue.name,
-            lastname: formValue.lastname,
-            celphone: formValue.phone,
-            address: formValue.address,
-            city: formValue.city,
-            email,
-            password,
-          };
-
-          setFormData(newAddressData);
-        } else {
-          payment(product, address[0].id);
-
-        }
-      } catch (error) {
-        toast.error(error.message);
+      
+      if (user.email === "hh@gmail.com") {
+        await logoutAndLogin(formValue);
+      } else {
+        const addressId = selectedAddress?.id || localAddress?.[0]?.id;
+        addressId
+          ? await processPayment(addressId)
+          : setFormData(getFormData(formValue));
       }
     },
   });
 
-  // const addAdress = async () => {
-  //   await addressCtrl.addAddress(formValue, user.id, accesToken);
-  // };
-
-  // Función reutilizable para validar y calcular el valor de envío según la ciudad
-  const calculateEnvio = (city) => {
-    if (!city || city === "") {
-      return 0; // Si la ciudad está vacía, retorna 0
-    } else if (city.toLowerCase() === "cali") {
-      return 12000; // Si es Cali, retorna 12000
-    } else {
-      return 15000; // Para cualquier otra ciudad, retorna 15000
-    }
+  const logoutAndLogin = async (formValue) => {
+    await logout();
+    const { email, password } = formValue;
+    await userCtrl.addUserApi({ email, password });
+    const response = await authCtrl.login({ email, password });
+    await login(response.access);
+    setFormData(getFormData(formValue));
   };
 
-  // handleCityChange usando la función reutilizable
-  const handleCityChange = (event) => {
-    const { value } = event.target; // Obtiene el valor ingresado en el input
+  const toggleAddressModal = () => setAddressModalOpen(!isAddressModalOpen);
+  const toggleAddress = () => setChangeAddress(!changeAddress);
 
-    formik.setFieldValue("city", value); // Actualiza el valor de la ciudad en formik
-    const envio = calculateEnvio(value); // Llama a la función de validación
-    setEnvio(envio); // Actualiza el valor de envío
+  const toggleModal2 = () => {
+    // addChange();
+    setModalOpen2(!isModalOpen2);
   };
 
-  useEffect(() => {
-   
-     
-    const addNewAddress = async () => {
-      if (user && formData) {
-        try {
-          const response = await addressCtrl.addAddress(
-            formData,
-            user.id,
-            accesToken
-          );
-          // setNewAddress(response);
-          setFormData(null);
-          addChange();
-          setSelectedAddress(response);
+  const handleCityChange = (e) => {
+    const city = e.target.value;
+    formik.setFieldValue("city", city);
+    setEnvio(calculateShipping(city));
+  };
 
-          payment(product, response.id);
-        } catch (error) {
-          console.log("Error al agregar la dirección:", error.message);
-        }
-      }
-    };
-
-    addNewAddress();
-  }, [formData]);
 
   return (
     <div className={styles.list}>
-      <div className={styles.datosPeronales}>
-        <h2>Finalizar Compra</h2>
-
-        <Form onSubmit={formik.handleSubmit}>
-          {(address?.length < 1 || address?.name === "Apellidos") && (
-            <>
-              <FormGroup floating>
+      <h2>Finalizar Compra</h2>
+      <Form onSubmit={formik.handleSubmit}>
+        {(!selectedAddress || localAddress?.length === 0 ) && !isLoading && (
+          <>
+            {[
+              "name",
+              "lastname",
+              "phone",
+              "password",
+              "email",
+              "city",
+              "address",
+              "nota",
+            ].map((field) => (
+              <FormGroup key={field}>
                 <Input
-                  id="name"
-                  name="name"
-                  placeholder="Nombre"
-                  type="text"
-                  value={formik.values.name}
-                  onChange={formik.handleChange}
-                  error={formik.errors.name}
+                  id={field}
+                  name={field}
+                  placeholder={field}
+                  type={field === "nota" ? "textarea" : "text"}
+                  value={formik.values[field]}
+                  onChange={
+                    field === "city" ? handleCityChange : formik.handleChange
+                  }
+                  invalid={formik.touched[field] && !!formik.errors[field]}
                 />
-                <Label for="Nombre">Nombre</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="lastname"
-                  name="lastname"
-                  placeholder="Apellido"
-                  type="text"
-                  value={formik.values.lastname}
-                  onChange={formik.handleChange}
-                  error={formik.errors.lastname}
-                />
-                <Label for="lastname">Apellido</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="text"
-                  placeholder="Teléfono"
-                  value={formik.values.phone}
-                  onChange={formik.handleChange}
-                  error={formik.errors.phone}
-                />
-                <Label for="phono">Teléfono</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="password"
-                  name="password"
-                  type="text"
-                  placeholder="Número de Identificacíon"
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  error={formik.errors.password}
-                />
-                <Label for="exampleEmail">Número de Identificación</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Correo"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  error={formik.errors.email}
-                />
-                <Label for="email">Correo</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="city"
-                  name="city"
-                  type="text"
-                  placeholder="Ciudad"
-                  value={formik.values.city}
-                  onChange={handleCityChange}
-                  error={formik.errors.city}
-                />
-                <Label for="city">Ciudad</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="address"
-                  name="address"
-                  type="text"
-                  placeholder="Dirección Completa"
-                  value={formik.values.address}
-                  onChange={formik.handleChange}
-                  error={formik.errors.address}
-                />
-                <Label for="address">Dirección Completa</Label>
-              </FormGroup>{" "}
-              <FormGroup floating>
-                <Input
-                  id="nota"
-                  name="nota"
-                  placeholder="Notas del Pedido (Opcional)"
-                  type="textarea"
-                  value={formik.values.nota}
-                  onChange={formik.handleChange}
-                  error={formik.errors.nota}
-                />
-                <label for="nota">Notas del Pedido (Opcional)</label>
+                <Label for={field}>{field}</Label>
+                {formik.touched[field] && formik.errors[field] && (
+                  <div className="text-danger">{formik.errors[field]}</div>
+                )}
               </FormGroup>
-            </>
-          )}
-          <div className={styles.detalle}>
-            {/* <h5>Detalle de la Compra</h5> */}
-            {map(product, (item) => (
-              <div key={item[0]?.codigo} className={styles.card}>
-                {item[0]?.images ? (
-                  <CardImg
-                    alt="Card image cap"
-                    src={BASE_NAME + item[0]?.images}
-                    className={styles.skeleton}
-                  />
-                ) : (
-                  <CardImg
-                    alt="Card image cap"
-                    src={item[0]?.image_alterna}
-                    className={styles.skeleton}
-                  />
-                )}
-
-                <div className={styles.detalle}>
-                  <label className={styles.name}>{item[0]?.name}</label>
-                  <p className={styles.price}>
-                    $ {format(item[0]?.price1 * item.quantity)}{" "}
-                  </p>
-                  {/* <p className={styles.price}>
-                   - $ {format(item[0].discount * item.quantity)}
-                  </p> */}
-
-                  <label>
-                    <div className={styles.btn}>
-                      <AiOutlineMinusCircle
-                        onClick={() => decreaseCart(item[0]?.codigo)}
-                        size={30}
-                      />
-                      <h5>{item.quantity}</h5>
-                      <AiFillPlusCircle
-                        onClick={() => incrementCart(item[0]?.codigo)}
-                        size={30}
-                      />
-                    </div>
-                  </label>
-                </div>
-                <hr></hr>
-              </div>
             ))}
+          </>
+        )}
 
-            <div className={styles.totales}>
-              <h3>Neto a Pagar</h3>
-
-              <p>Subtotal: $ {format(subtotal)}</p>
-
-              <p>Envío y manejo:$ {format(envio)}</p>
-
-              {/* <p>Descuento: $ 0</p> */}
-              <p>Total a Pagar: $ {format(subtotal + envio)}</p>
-            </div>
-
-            {!address && (
-              <div className={styles.totales}>
-                <h3>Dirección de envío</h3>
-
-                {selectedAddress ? (
-                  <>
-                    <p>Nombres: {selectedAddress.name}</p>
-                    <p>Apellidos: {selectedAddress.lastname}</p>
-                    <p>Dirección: {selectedAddress.address}</p>
-                    <p>Ciudad: {selectedAddress.city}</p>
-                    <p>Teléfono: {selectedAddress.phone}</p>
-                    <p>Correo: {selectedAddress.email}</p>
-                  </>
-                ) : (
-                  <ModalBasic
-                    onClose={onClose}
-                    show={show}
-                    title="Dirección de envio"
-                  >
-                    <AddAddress />
-                  </ModalBasic>
-                )}
-                <Button outline onClick={() => toggleModal()}>
-                  Cambiar Dirección de envio
-                </Button>
+        <div className={styles.detalle}>
+          {map(product, (item) => (
+            <div key={item[0]?.codigo} className={styles.card}>
+              <CardImg
+                alt="Card image cap"
+                src={BASE_NAME + (item[0]?.images || item[0]?.image_alterna)}
+                className={styles.skeleton}
+              />
+              <div className={styles.detalle}>
+                <label className={styles.name}>{item[0]?.name}</label>
+                <p className={styles.price}>
+                  $ {item[0]?.price1 * item.quantity}
+                </p>
+                <div className={styles.btn}>
+                  <AiOutlineMinusCircle
+                    size={25}
+                    onClick={() => decreaseCart(item[0]?.codigo)}
+                  />
+                  <h5>{item.quantity}</h5>
+                  <AiFillPlusCircle
+                    size={25}
+                    onClick={() => incrementCart(item[0]?.codigo)}
+                  />
+                </div>
               </div>
-            )}
+              <hr />
+            </div>
+          ))}
 
-            {/* <Button block onClick={() => payment("Payment")}>
-              Finalizar Compra
-            </Button> */}
+          <div className={styles.totales}>
+            <h3>Neto a Pagar</h3>
+            <p>Subtotal: $ {subtotal}</p>
+            <p>Envío y manejo: $ {envio}</p>
+            <p>Total a Pagar: $ {subtotal + envio}</p>
           </div>
-          {/* <Button
-            block
-            type="submit"
-            color="secondary"
-            onClick={() => payment(product, selectedAddress?.id)}
-            disabled={!selectedAddress}
-          >
-            Pagar
-          </Button> */}
 
-          
-          <Button block type="submit" color="secondary">
-            Pagar
-          </Button>
-        </Form>
-      </div>
+          {selectedAddress && (
+            <div className={styles.totales}>
+              <h3>Datos de Entrega</h3>
+              <p>Nombres: {selectedAddress.name}</p>
+              <p>Apellidos: {selectedAddress.lastname}</p>
+              <p>Dirección: {selectedAddress.address}</p>
+              <p>Ciudad: {selectedAddress.city}</p>
+              <p>Teléfono: {selectedAddress.phone}</p>
+              <p>Correo: {selectedAddress.email}</p>
+              {/* <Button outline onClick={toggleAddressModal}>Cambiar Dirección de Envío</Button> */}
 
-      <Modal centered isOpen={isModalOpen} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>Seleccione una Dirección</ModalHeader>
+              <Button outline onClick={() => toggleAddressModal()}>
+                Cambiar Dirección de envio
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <Button block type="submit" color="secondary">
+          Pagar
+        </Button>
+      </Form>
+
+      <Modal centered isOpen={isAddressModalOpen} toggle={toggleAddressModal}>
+        <ModalHeader toggle={toggleAddressModal}>
+          Seleccione una Dirección
+        </ModalHeader>
 
         <ModalBody>
           <div className={styles.modalContent}>
             <ul>
-              {address &&
-                address.map((addres, index) => (
+              {localAddress &&
+                localAddress.map((addres, index) => (
                   <div key={index}>
                     <li onClick={() => selectecAddress(addres)}>
                       <h6>{addres.title}</h6>
@@ -473,7 +298,7 @@ export function ListPayment(props) {
             <Button block onClick={toggleModal2}>
               Nueva Dirección
             </Button>
-            <Button block outline onClick={toggleModal}>
+            <Button block outline onClick={toggleAddressModal}>
               Salir
             </Button>
           </div>
@@ -482,37 +307,46 @@ export function ListPayment(props) {
 
       <Modal centered isOpen={isModalOpen2} toggle={toggleModal2}>
         <ModalHeader toggle={toggleModal2}>Nueva Dirección</ModalHeader>
-        <AddAddress toggleModal2={toggleModal2} />
+        <AddAddress toggleModal2={toggleModal2} toggleAddress={toggleAddress} />
         <ModalBody></ModalBody>
       </Modal>
     </div>
   );
 }
 
-function initialValues(data = {}) {
-  return {
-    name: data.name !== "Apellidos" ? data.name : "",
-    lastname: data.lastname !== "apellidos" ? data.lastname : "",
-    phone: data.phone !== "3236598" ? data.phone : "",
-    password: data.password !== "Nuevo" ? data.password : "",
-    email: data.email !== "Nuevo" ? data.email : "",
-    city: data.city || "",
-    address: data.address !== "Carrera 28 # 9b 41" ? data.address : "",
-    nota: data.nota || "",
-  };
-}
+// Formato de precios
+const format = (num) => new Intl.NumberFormat("es-CO").format(num);
 
-function validationSchema() {
-  return {
-    name: Yup.string().required("Este campo es obligatorio!"),
-    lastname: Yup.string().required("Este campo es obligatorio!"),
-    phone: Yup.string().required("Este campo es obligatorio!"),
-    email: Yup.string()
-      .email("No es un email valido!")
-      .required("Este campo es obligatorio!"),
-    password: Yup.string().required("Este campo es obligatorio!"),
-    city: Yup.string().required("Este campo es obligatorio!"),
-    address: Yup.string().required("Este campo es obligatorio!"),
-    nota: Yup.string(),
-  };
-}
+// Funciones utilitarias
+const getInitialValues = (data) => ({
+  name: data?.name || "",
+  lastname: data?.lastname || "",
+  phone: data?.phone || "",
+  address: data?.address || "",
+  city: data?.city || "",
+  email: data?.email || "",
+  password: data?.password || "",
+  nota: data?.nota || "",
+});
+
+const getValidationSchema = () => ({
+ 
+  name: Yup.string().required("El nombre es obligatorio"),
+  lastname: Yup.string().required("El apellido es obligatorio"),
+  phone: Yup.string().required("El teléfono es obligatorio"),
+  address: Yup.string().required("La dirección es obligatoria"),
+  city: Yup.string().required("La ciudad es obligatoria"),
+  email: Yup.string().email().required("El email es obligatorio"),
+  password: Yup.string().required("La contraseña es obligatoria"),
+});
+
+const getFormData = (formValue) => ({
+  title: "Principal",
+  name: formValue.name,
+  lastname: formValue.lastname,
+  phone: formValue.phone,
+  address: formValue.address,
+  city: formValue.city,
+  email: formValue.email,
+  password: formValue.password,
+});

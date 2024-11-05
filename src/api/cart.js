@@ -1,7 +1,9 @@
+
 import { forEach } from "lodash";
 import { CART } from "../config/constants";
 
 export class Cart {
+
   add(itemId, quantity) {
     const products = this.getAll();
 
