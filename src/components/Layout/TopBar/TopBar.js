@@ -35,7 +35,7 @@ export function TopBar({ categories, isLoading }) {
 
   function handleClickAdmin() {
     router.push(
-      "https://https://boutiquemonaco.workhard.site/admin-dashboard/"
+      "https://boutiquemonaco.workhard.site/admin-dashboard/"
     );
   }
 
