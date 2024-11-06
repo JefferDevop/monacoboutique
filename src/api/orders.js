@@ -23,7 +23,6 @@ const data = [
 
 export class Orders {
   async addOrdersApi(dataProducts) {
-   console.log(dataProducts);
     try {
       const url = `${BASE_API}/api/ordere/create_order/`;
 

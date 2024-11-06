@@ -2,7 +2,7 @@ import { BASE_API } from "../config/constants";
 
 export class Address {
   async addAddress(data, idUser, token) {
-    console.log( "formData", data);
+    
     try {
       const url = `${BASE_API}/api/address/`;
       const params = {
@@ -32,8 +32,6 @@ export class Address {
       if (response.status !== 201) {
         throw new Error("Occurio un error al crear una nueva dirección");
       }
-      console.log(result);
-      
       return result;
     } catch (error) {
       throw error;

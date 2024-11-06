@@ -34,10 +34,15 @@ export function TopBar({ categories, isLoading }) {
   const toggleModal = useCallback(() => setIsOpen((prev) => !prev), []);
 
   function handleClickAdmin() {
-    router.push(
-      "https://boutiquemonaco.workhard.site/admin-dashboard/"
-    );
+    router.push("https://boutiquemonaco.workhard.site/admin-dashboard/");
   }
+
+    const clearLocalStorage = () => {
+      localStorage.clear();
+      alert("Local storage cleared!");
+      window.location.reload();
+    };
+ 
 
   return (
     <div className={styles.topbar}>
@@ -93,6 +98,9 @@ export function TopBar({ categories, isLoading }) {
         <ModalBody>
           <FormGroup>
             <p onClick={() => handleClickAdmin()}>Admin</p>
+            <Button color="danger" onClick={clearLocalStorage}>
+              Clear
+            </Button>
           </FormGroup>
         </ModalBody>
 

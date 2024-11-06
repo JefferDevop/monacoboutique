@@ -27,7 +27,7 @@ const addressCtrl = new Address();
 
 export function ListPayment({ product }) {
   const calculateShipping = (city) =>
-    city?.toLowerCase() === "cali" ? 12000 : 15000;
+    city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
 
   const { accesToken, login, logout, user } = useAuth();
   const { decreaseCart, incrementCart, deleteAllCart } = useCart();
@@ -49,6 +49,10 @@ export function ListPayment({ product }) {
     (acc, item) => acc + item[0]?.price1 * item.quantity,
     0
   );
+
+  const format = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
 
   useEffect(() => {
     if (!user || !user.id) return;
@@ -163,7 +167,6 @@ export function ListPayment({ product }) {
     address: "Dirección",
     nota: "Nota",
   };
-  
 
   return (
     <div className={styles.list}>
@@ -176,7 +179,7 @@ export function ListPayment({ product }) {
                 <Input
                   id={field}
                   name={field}
-                  placeholder={fieldLabels[field]} // Use user-friendly label as placeholder
+                  placeholder={fieldLabels[field]}
                   type={field === "nota" ? "textarea" : "text"}
                   value={formik.values[field]}
                   onChange={
@@ -203,7 +206,7 @@ export function ListPayment({ product }) {
               <div className={styles.detalle}>
                 <label className={styles.name}>{item[0]?.name}</label>
                 <p className={styles.price}>
-                  $ {item[0]?.price1 * item.quantity}
+                  $ {format(item[0]?.price1 * item.quantity)}
                 </p>
                 <div className={styles.btn}>
                   <AiOutlineMinusCircle
@@ -223,9 +226,9 @@ export function ListPayment({ product }) {
 
           <div className={styles.totales}>
             <h3>Neto a Pagar</h3>
-            <p>Subtotal: $ {subtotal}</p>
-            <p>Envío y manejo: $ {envio}</p>
-            <p>Total a Pagar: $ {subtotal + envio}</p>
+            <p>Subtotal: $ {format(subtotal)}</p>
+            <p>Envío y manejo: $ {format(envio)}</p>
+            <p>Total a Pagar: $ {format(subtotal + envio)}</p>
           </div>
 
           {selectedAddress && (
