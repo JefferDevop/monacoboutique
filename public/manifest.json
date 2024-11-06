@@ -4,9 +4,9 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "name": "INFINITY MARKET",
-  "short_name": "INFINITY MARKET",
-  "description": "INFINITY MARKET",
+  "name": "MÓNACO BOUTIQUE",
+  "short_name": "MÓNACO BOUTIQUE",
+  "description": "MÓNACO BOUTIQUE",
   "icons": [
     {
       "src": "/icon-192x192.png",

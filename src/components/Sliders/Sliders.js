@@ -3,6 +3,7 @@ import { Carousel } from 'react-responsive-carousel';
 import Image from 'next/image';
 import { BASE_NAME } from '@/config/constants';
 import styles from './Sliders.module.scss';
+import { CardImg } from "reactstrap";
 
 export function Sliders({ gallery }) {
   return (
@@ -21,12 +22,9 @@ export function Sliders({ gallery }) {
         {gallery?.length > 0 ? (
           gallery.map((item, index) => (
             <div className={styles.carousel_vim}key={item.id || index}>            
-                <Image
+                <CardImg
                   alt={`Slide ${index}`}
-                  src={`${BASE_NAME}${item.image}`}
-                  style={{ objectFit: "cover", width: "auto", height: "auto" }}
-                  width={150} // Establece un ancho apropiado
-                  height={80} // Establece una altura apropiada                                  
+                  src={`${BASE_NAME}${item.image}`}                                               
                 />               
             </div>
           ))

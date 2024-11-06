@@ -31,7 +31,7 @@ export function ListPayment({ product }) {
 
   const { accesToken, login, logout, user } = useAuth();
   const { decreaseCart, incrementCart, deleteAllCart } = useCart();
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isAddressModalOpen, setAddressModalOpen] = useState(false);
   const [isModalOpen2, setModalOpen2] = useState(false);
@@ -45,13 +45,13 @@ export function ListPayment({ product }) {
     calculateShipping(selectedAddress?.city)
   );
 
-
   const subtotal = product.reduce(
     (acc, item) => acc + item[0]?.price1 * item.quantity,
     0
   );
 
   useEffect(() => {
+    if (!user || !user.id) return;
     const handleGetAddress = async () => {
       try {
         const response = await addressCtrl.getAddress(accesToken, user.id);
@@ -70,12 +70,6 @@ export function ListPayment({ product }) {
 
     handleGetAddress();
   }, [addressCtrl, accesToken, user?.id]);
-
-
- 
-
-
-
 
   useEffect(() => {
     if (user && formData) handleNewAddress();
@@ -114,8 +108,7 @@ export function ListPayment({ product }) {
       );
       // localStorage.setItem("init_point", response.init_point);
       window.location.href = response.init_point;
-       deleteAllCart();
-      console.log("pago",response);
+      deleteAllCart();
     } catch (error) {
       console.error("Error en el proceso de pago:", error);
     }
@@ -123,10 +116,9 @@ export function ListPayment({ product }) {
 
   const formik = useFormik({
     initialValues: getInitialValues(localAddress?.[0]),
-    // validationSchema: Yup.object(getValidationSchema()),
-    
+    validationSchema: Yup.object(getValidationSchema()),
+
     onSubmit: async (formValue) => {
-      
       if (user.email === "hh@gmail.com") {
         await logoutAndLogin(formValue);
       } else {
@@ -161,28 +153,30 @@ export function ListPayment({ product }) {
     setEnvio(calculateShipping(city));
   };
 
+  const fieldLabels = {
+    name: "Nombre",
+    lastname: "Apellido",
+    phone: "Teléfono",
+    password: "Contraseña",
+    email: "Correo Electrónico",
+    city: "Ciudad",
+    address: "Dirección",
+    nota: "Nota",
+  };
+  
 
   return (
     <div className={styles.list}>
       <h2>Finalizar Compra</h2>
       <Form onSubmit={formik.handleSubmit}>
-        {(!selectedAddress || localAddress?.length === 0 ) && !isLoading && (
+        {(!selectedAddress || localAddress?.length === 0) && !isLoading && (
           <>
-            {[
-              "name",
-              "lastname",
-              "phone",
-              "password",
-              "email",
-              "city",
-              "address",
-              "nota",
-            ].map((field) => (
+            {Object.keys(fieldLabels).map((field) => (
               <FormGroup key={field}>
                 <Input
                   id={field}
                   name={field}
-                  placeholder={field}
+                  placeholder={fieldLabels[field]} // Use user-friendly label as placeholder
                   type={field === "nota" ? "textarea" : "text"}
                   value={formik.values[field]}
                   onChange={
@@ -190,7 +184,6 @@ export function ListPayment({ product }) {
                   }
                   invalid={formik.touched[field] && !!formik.errors[field]}
                 />
-                <Label for={field}>{field}</Label>
                 {formik.touched[field] && formik.errors[field] && (
                   <div className="text-danger">{formik.errors[field]}</div>
                 )}
@@ -330,7 +323,6 @@ const getInitialValues = (data) => ({
 });
 
 const getValidationSchema = () => ({
- 
   name: Yup.string().required("El nombre es obligatorio"),
   lastname: Yup.string().required("El apellido es obligatorio"),
   phone: Yup.string().required("El teléfono es obligatorio"),
