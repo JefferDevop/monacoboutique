@@ -11,7 +11,7 @@ export default function PaymentPage() {
   const { user, login, accesToken } = useAuth();
   const { cart, product, loading } = useCart();
   const [localAddress, setLocalAddress] = useState([]);
-console.log(user);
+console.log("nuevo");
 
 
   // Comprobar el usuario y loguear si es necesario
