@@ -25,11 +25,11 @@ const authCtrl = new Auth();
 const userCtrl = new User();
 const addressCtrl = new Address();
 
-export function ListPayment({ product }) {
+export function ListPayment({ product, localAddress }) {
   const calculateShipping = (city) =>
     city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
 
-  const { accesToken, login, logout, user } = useAuth();
+  const { loading, accesToken, login, logout, user } = useAuth();
   const { decreaseCart, incrementCart, deleteAllCart } = useCart();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,8 +39,8 @@ export function ListPayment({ product }) {
   const [hasSetInitialAddress, setHasSetInitialAddress] = useState(false);
 
   const [formData, setFormData] = useState(null);
-  const [localAddress, setLocalAddress] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
+
   const [envio, setEnvio] = useState(() =>
     calculateShipping(selectedAddress?.city)
   );
@@ -52,48 +52,6 @@ export function ListPayment({ product }) {
 
   const format = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  };
-
-  useEffect(() => {
-    if (!user || !user.id) return;
-    const handleGetAddress = async () => {
-      try {
-        const response = await addressCtrl.getAddress(accesToken, user.id);
-        setLocalAddress(response);
-
-        if (!hasSetInitialAddress && response?.length > 0) {
-          setSelectedAddress(response?.[0] || null);
-          setHasSetInitialAddress(true);
-        }
-      } catch (error) {
-        console.error("Error al agregar la dirección:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    handleGetAddress();
-  }, [addressCtrl, accesToken, user?.id]);
-
-  useEffect(() => {
-    if (user && formData) handleNewAddress();
-  }, [formData]);
-
-  const handleNewAddress = async () => {
-    try {
-      const response = await addressCtrl.addAddress(
-        formData,
-        user.id,
-        accesToken
-      );
-      // setFormData(null);
-
-      // addChange();
-      setSelectedAddress(response);
-      await processPayment(response.id);
-    } catch (error) {
-      console.error("Error al agregar la dirección:", error);
-    }
   };
 
   const selectecAddress = (address) => {
@@ -118,30 +76,49 @@ export function ListPayment({ product }) {
     }
   };
 
-  const formik = useFormik({
-    initialValues: getInitialValues(localAddress?.[0]),
-    validationSchema: Yup.object(getValidationSchema()),
 
+
+
+  useEffect(() => {
+    setSelectedAddress(localAddress?.[0] || null);
+  }, []);
+
+
+  const formik = useFormik({
+    initialValues: getInitialValues(selectedAddress || localAddress),
+    // validationSchema: Yup.object(getValidationSchema()),
     onSubmit: async (formValue) => {
-      if (user.email === "hh@gmail.com") {
-        await logoutAndLogin(formValue);
-      } else {
-        const addressId = selectedAddress?.id || localAddress?.[0]?.id;
-        addressId
-          ? await processPayment(addressId)
-          : setFormData(getFormData(formValue));
+      try {
+ 
+        if (user.email === "hh@gmail.com") {
+          
+          const { email, password } = formValue;
+          const newUser = await userCtrl.addUserApi({ email, password });
+          await logout();
+          const response = await authCtrl.login({ email, password });
+          await login(response.access);
+
+          const newAddress = await addressCtrl.addAddress(
+            formValue,
+            newUser.id,
+            accesToken
+          );
+
+      
+          
+         
+          await processPayment(newAddress.id);
+        } else {
+          // Procesar pago directamente si ya hay un usuario logeado
+          const addressId = selectedAddress?.id || localAddress?.[0]?.id;
+         
+          await processPayment(addressId);
+        }
+      } catch (error) {
+        console.error("Error al procesar el pago:", error);
       }
     },
   });
-
-  const logoutAndLogin = async (formValue) => {
-    await logout();
-    const { email, password } = formValue;
-    await userCtrl.addUserApi({ email, password });
-    const response = await authCtrl.login({ email, password });
-    await login(response.access);
-    setFormData(getFormData(formValue));
-  };
 
   const toggleAddressModal = () => setAddressModalOpen(!isAddressModalOpen);
   const toggleAddress = () => setChangeAddress(!changeAddress);
@@ -161,7 +138,7 @@ export function ListPayment({ product }) {
     name: "Nombre",
     lastname: "Apellido",
     phone: "Teléfono",
-    password: "Contraseña",
+    password: "Identificación",
     email: "Correo Electrónico",
     city: "Ciudad",
     address: "Dirección",
@@ -172,7 +149,7 @@ export function ListPayment({ product }) {
     <div className={styles.list}>
       <h2>Finalizar Compra</h2>
       <Form onSubmit={formik.handleSubmit}>
-        {(!selectedAddress || localAddress?.length === 0) && !isLoading && (
+        {localAddress?.length < 1 && (
           <>
             {Object.keys(fieldLabels).map((field) => (
               <FormGroup key={field}>

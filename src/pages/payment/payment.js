@@ -1,35 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useAuth, useCart } from "@/hooks";
-import { Auth } from "@/api";
+import { Auth, Address } from "@/api";
 import { Separator, NotFound, ListPayment } from "@/components";
 import { BasicLayout } from "@/layouts";
 
 const authCtrl = new Auth();
+const addressCtrl = new Address();
 
 export default function PaymentPage() {
-  const { user, accesToken, login } = useAuth();
+  const { user, login, accesToken } = useAuth();
   const { cart, product, loading } = useCart();
+  const [localAddress, setLocalAddress] = useState([]);
+console.log(user);
 
-  // Función para iniciar sesión temporalmente
-  const loginUser = async () => {
-    const initialValue = {
-      email: "hh@gmail.com",
-      password: "1452",
-    };
-
-    try {
-      const response = await authCtrl.login(initialValue);
-      login(response.access);
-    } catch (error) {
-      console.error("Login error:", error.message);
-    }
-  };
 
   // Comprobar el usuario y loguear si es necesario
   useEffect(() => {
-    if (!user) {
-      loginUser();
-    }
+    const handleLogin = async () => {
+      if (!user) {
+        try {
+          const response = await authCtrl.login({ email: "hh@gmail.com", password: "1452" });
+          login(response.access);
+        } catch (error) {
+          console.error("Error al iniciar sesión temporal:", error);
+        }
+      }else{
+        
+        const response = await addressCtrl.getAddress(accesToken, user.id);
+        setLocalAddress(response);
+      }
+    };
+  
+    handleLogin();
   }, [user]);
 
   const hasProducts = product && product.length > 0;
@@ -41,7 +43,7 @@ export default function PaymentPage() {
         <h1>Cargando ...</h1>
       ) : hasProducts ? (
         <>
-          <ListPayment product={product} />
+          <ListPayment product={product} localAddress={localAddress} />
         </>
       ) : (
         <NotFound title="Uppss... en este momento no hay productos para pagar" />
