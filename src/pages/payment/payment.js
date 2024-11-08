@@ -8,10 +8,10 @@ const authCtrl = new Auth();
 const addressCtrl = new Address();
 
 export default function PaymentPage() {
-  const { user, login, accesToken } = useAuth();
+  const { user, login, accesToken, loading: authLoading } = useAuth();
   const { cart, product, loading } = useCart();
   const [localAddress, setLocalAddress] = useState([]);
-console.log("nuevo");
+
 
 
   // Comprobar el usuario y loguear si es necesario
@@ -32,7 +32,7 @@ console.log("nuevo");
     };
   
     handleLogin();
-  }, [user]);
+  }, []);
 
   const hasProducts = product && product.length > 0;
 
@@ -43,7 +43,7 @@ console.log("nuevo");
         <h1>Cargando ...</h1>
       ) : hasProducts ? (
         <>
-          <ListPayment product={product} localAddress={localAddress} />
+          <ListPayment product={product} localAddress={localAddress} authLoading={authLoading} />
         </>
       ) : (
         <NotFound title="Uppss... en este momento no hay productos para pagar" />

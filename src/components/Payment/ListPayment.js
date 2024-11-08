@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Payment, Auth, User, Address } from "@/api";
 import { useCart, useAuth } from "@/hooks";
 import { map } from "lodash";
+import { toast } from "react-toastify";
 import {
   Button,
   CardImg,
@@ -25,7 +26,7 @@ const authCtrl = new Auth();
 const userCtrl = new User();
 const addressCtrl = new Address();
 
-export function ListPayment({ product, localAddress }) {
+export function ListPayment({ product, localAddress, authLoading }) {
   const calculateShipping = (city) =>
     city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
 
@@ -76,24 +77,28 @@ export function ListPayment({ product, localAddress }) {
     }
   };
 
-
-
-
   useEffect(() => {
     setSelectedAddress(localAddress?.[0] || null);
-  }, []);
-
+  }, [localAddress]);
 
   const formik = useFormik({
     initialValues: getInitialValues(selectedAddress || localAddress),
     // validationSchema: Yup.object(getValidationSchema()),
     onSubmit: async (formValue) => {
       try {
- 
         if (user.email === "hh@gmail.com") {
-          
           const { email, password } = formValue;
           const newUser = await userCtrl.addUserApi({ email, password });
+
+          const value1 = "Ya existe un/a Usuario con este/a Correo.";
+          const value2 = newUser?.email;
+
+          if (value1 === value2[0]) {
+            toast.warning("Ya existe un/a Usuario con este/a Correo.")          
+            return; // Salir del flujo de creación de usuario si el correo ya existe
+          }
+  
+          // Si el correo no existe, crear el usuario y continuar con el pago
           await logout();
           const response = await authCtrl.login({ email, password });
           await login(response.access);
@@ -104,14 +109,11 @@ export function ListPayment({ product, localAddress }) {
             accesToken
           );
 
-      
-          
-         
           await processPayment(newAddress.id);
         } else {
           // Procesar pago directamente si ya hay un usuario logeado
           const addressId = selectedAddress?.id || localAddress?.[0]?.id;
-         
+
           await processPayment(addressId);
         }
       } catch (error) {
