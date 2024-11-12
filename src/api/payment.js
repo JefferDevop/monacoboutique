@@ -19,6 +19,9 @@ export class Payment {
         body: JSON.stringify(bodyData),
       };
 
+      console.log(url);
+      console.log(params);
+
       const response = await fetch(url, params);
 
       const result = await response.json();
@@ -26,6 +29,7 @@ export class Payment {
       if (response.status !== 201) {
         throw new Error("Occurio un error al crear el pago");
       }
+      
       
       
       return result;

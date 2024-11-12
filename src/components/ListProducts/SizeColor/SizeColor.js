@@ -54,6 +54,7 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
   const handleTallaClick = useCallback(
     (talla) => {
       setSelectedTalla((prevTalla) => (prevTalla === talla ? null : talla));
+      setQuantity(1);
 
       if (selectedColor && !availableColors.includes(selectedColor)) {
         setSelectedColor(null);
@@ -65,6 +66,7 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
   const handleColorClick = useCallback(
     (color) => {
       setSelectedColor((prevColor) => (prevColor === color ? null : color));
+      setQuantity(1);
 
       if (selectedTalla && !availableTallas.includes(selectedTalla)) {
         setSelectedTalla(null);
@@ -80,13 +82,23 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
     [propductTC]
   );
 
+  const getQtyAvailable = useCallback(() => {
+    const item = propductTC.find(
+      (product) =>
+        product.talla === selectedTalla && product.color === selectedColor
+    );
+    return item ? parseInt(item.qty_available, 10) : 0;
+  }, [selectedTalla, selectedColor, propductTC]);
+
   const addData = useCallback(() => {
     const item = getCodigoProducto(selectedTalla, selectedColor);
     addCart(item, quantity);
     toast.success("¡Se agregó con éxito!");
   }, [selectedTalla, selectedColor, quantity, getCodigoProducto, addCart]);
 
-  const incrementQuantity = () => setQuantity((prev) => Math.min(prev + 1, 99));
+  const incrementQuantity = () =>
+    setQuantity((prev) => Math.min(prev + 1, getQtyAvailable()));
+
   const decrementQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
 
   const getPrecioProducto = useCallback(
@@ -95,6 +107,18 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
       null,
     [propductTC]
   );
+
+
+  const handleAddToCartClick = () => {
+ 
+    
+    if (!selectedTalla || !selectedColor) {
+      toast.error("Seleccione talla y color");
+    } else {
+      addData();
+    }
+  };
+
 
   useEffect(() => {
     const product =
@@ -141,11 +165,30 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
 
         <div className={styles.quantity}>
           <h5>Cantidad</h5>
-
           <div>
-            <AiOutlineMinusCircle onClick={decrementQuantity} size={25} />
+            <Button
+            size="sm"
+            outline
+          
+              onClick={
+                selectedTalla && selectedColor ? decrementQuantity : null
+              }
+              disabled={!selectedTalla || !selectedColor}
+            >
+              <AiOutlineMinusCircle size={25} />
+            </Button>
             <p>{quantity}</p>
-            <AiFillPlusCircle onClick={incrementQuantity} size={25} />
+            <Button
+            size="sm"
+            outline
+            
+              onClick={
+                selectedTalla && selectedColor ? incrementQuantity : null
+              }
+              disabled={!selectedTalla || !selectedColor}
+            >
+              <AiFillPlusCircle size={25} />
+            </Button>
           </div>
         </div>
         {productDetail.product?.price_old > productDetail.product?.price1 && (
@@ -153,11 +196,10 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
         )}
 
         <div>
-          <Button
-            size="lg"
+          <Button          
             block
-            onClick={addData}
-            disabled={!selectedTalla || !selectedColor}
+            onClick={handleAddToCartClick}
+          
           >
             Agregar al Carrito
           </Button>

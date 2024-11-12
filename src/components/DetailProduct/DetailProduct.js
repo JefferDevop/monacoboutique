@@ -113,7 +113,7 @@ export function DetailProduct(props) {
         <div className={styles.detailProduct}>
           {productData?.price_old > productData?.price1 && (
             <div className={styles.offer}>
-              <h5>¡OFERTA!</h5>
+              <h5>¡OFERTA!</h5>             
             </div>
           )}
 
@@ -179,19 +179,7 @@ export function DetailProduct(props) {
             </div>
 
 
-
-
-
-
-
             <SizeColor propductTC={productInventory} getOffer={getOffer} />
-
-
-
-
-
-
-
 
 
             {hasItems && (

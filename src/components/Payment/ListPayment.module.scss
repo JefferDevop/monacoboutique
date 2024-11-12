@@ -1,6 +1,24 @@
 .list {
   margin: 1rem;
 
+  .loadingPayment{
+    position: fixed; /* Fija el div sobre el contenido */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente */
+    z-index: 9999; /* Asegura que esté encima de todo */
+    display: flex; /* Para centrar contenido si es necesario */
+    justify-content: center;
+    align-items: center;
+    h1{
+
+      color: white;
+    }
+
+  }
+
 
   .datosPeronales {
     .input {

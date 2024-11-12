@@ -32,7 +32,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
 
   const { loading, accesToken, login, logout, user } = useAuth();
   const { decreaseCart, incrementCart, deleteAllCart } = useCart();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isAddressModalOpen, setAddressModalOpen] = useState(false);
   const [isModalOpen2, setModalOpen2] = useState(false);
@@ -86,6 +86,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
     // validationSchema: Yup.object(getValidationSchema()),
     onSubmit: async (formValue) => {
       try {
+        setIsLoading("true");
         if (user.email === "hh@gmail.com") {
           const { email, password } = formValue;
           const newUser = await userCtrl.addUserApi({ email, password });
@@ -94,10 +95,11 @@ export function ListPayment({ product, localAddress, authLoading }) {
           const value2 = newUser?.email;
 
           if (value1 === value2[0]) {
-            toast.warning("Ya existe un/a Usuario con este/a Correo.")          
+            toast.warning("Ya existe un/a Usuario con este/a Correo.");
+            setIsLoading("false");
             return; // Salir del flujo de creación de usuario si el correo ya existe
           }
-  
+
           // Si el correo no existe, crear el usuario y continuar con el pago
           await logout();
           const response = await authCtrl.login({ email, password });
@@ -110,14 +112,16 @@ export function ListPayment({ product, localAddress, authLoading }) {
           );
 
           await processPayment(newAddress.id);
+          setIsLoading("false");
         } else {
           // Procesar pago directamente si ya hay un usuario logeado
           const addressId = selectedAddress?.id || localAddress?.[0]?.id;
-
           await processPayment(addressId);
+          setIsLoading("false");
         }
       } catch (error) {
         console.error("Error al procesar el pago:", error);
+        setIsLoading("false");
       }
     },
   });
@@ -149,6 +153,11 @@ export function ListPayment({ product, localAddress, authLoading }) {
 
   return (
     <div className={styles.list}>
+      {isLoading && (
+        <div className={styles.loadingPayment}>
+          <h1>Estamos validando...</h1>
+        </div>
+      )}
       <h2>Finalizar Compra</h2>
       <Form onSubmit={formik.handleSubmit}>
         {localAddress?.length < 1 && (

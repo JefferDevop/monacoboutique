@@ -15,7 +15,7 @@ export function ListCategories({ categories }) {
         {categories.map(({ id, slug, image, image_alterna, name }) => {
           const src = image
             ? `${BASE_NAME}${upload}${scale}${image.split(upload)[1]}`
-            : image_alterna;
+            : image_alterna?.[0];
 
           return (
             <div key={id} className={styles.card}>

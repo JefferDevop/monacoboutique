@@ -50,14 +50,13 @@ const ProductCard = ({ product, formatCurrency }) => {
         <Image
           alt={name_extend}
           src={BASE_NAME + (product.images || product.image_alterna)}
-          width={130} // ajustar según necesidades
-          height={180} // ajustar según necesidades
-          quality={75} // optimización
-         
+          width={130}
+          height={180}
+          quality={75}
         />
       </Link>
       <h5>{name_extend}</h5>
-      <h5> $ {formatCurrency(price1)}</h5>
+      <h5> $ {formatCurrency(price1)}</h5>     
       {price_old > 0 && <h6> $ {formatCurrency(price_old)}</h6>}
     </div>
   );
