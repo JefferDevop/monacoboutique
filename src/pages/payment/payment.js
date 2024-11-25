@@ -12,26 +12,25 @@ export default function PaymentPage() {
   const { cart, product, loading } = useCart();
   const [localAddress, setLocalAddress] = useState([]);
 
-
-
+  console.log(user);
+  
   // Comprobar el usuario y loguear si es necesario
   useEffect(() => {
-    const handleLogin = async () => {
-      if (!user) {
-        try {
+    const handleLoginAndFetchAddress = async () => {
+      try {
+        if (!user && !authLoading) {
           const response = await authCtrl.login({ email: "hh@gmail.com", password: "1452" });
-          login(response.access);
-        } catch (error) {
-          console.error("Error al iniciar sesión temporal:", error);
+          login(response.access); // Actualiza el estado de autenticación
+        } else if (user && accesToken) {
+          const response = await addressCtrl.getAddress(accesToken, user.id);
+          setLocalAddress(response);
         }
-      }else{
-        
-        const response = await addressCtrl.getAddress(accesToken, user.id);
-        setLocalAddress(response);
+      } catch (error) {
+        console.error("Error durante la autenticación o la obtención de direcciones:", error);
       }
     };
-  
-    handleLogin();
+
+    handleLoginAndFetchAddress();
   }, []);
 
   const hasProducts = product && product.length > 0;

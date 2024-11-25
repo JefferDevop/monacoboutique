@@ -1,13 +1,19 @@
 import { BASE_API } from "../config/constants";
 
 export class Payment {
-  async createPayload(items, address, token) {
+  async createPayload(items, addressData, token) {
+
+    const address = addressData.id;
+    
     
     const bodyData = {
       items,
       address
     };
 
+    console.log("bodyData", bodyData);
+    
+    
     try {
       const url = `${BASE_API}/api/payment/`;
       const params = {
@@ -19,18 +25,13 @@ export class Payment {
         body: JSON.stringify(bodyData),
       };
 
-      console.log(url);
-      console.log(params);
-
       const response = await fetch(url, params);
 
       const result = await response.json();
 
       if (response.status !== 201) {
         throw new Error("Occurio un error al crear el pago");
-      }
-      
-      
+      }      
       
       return result;
     } catch (error) {

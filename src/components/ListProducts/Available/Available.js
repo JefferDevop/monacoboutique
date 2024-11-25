@@ -57,7 +57,7 @@ const ProductCard = ({ product, formatCurrency }) => {
       </Link>
       <h5>{name_extend}</h5>
       <h5> $ {formatCurrency(price1)}</h5>     
-      {price_old > 0 && <h6> $ {formatCurrency(price_old)}</h6>}
+      {price_old > price1 && <h6> $ {formatCurrency(price_old)}</h6>}
     </div>
   );
 };

@@ -27,8 +27,9 @@ const userCtrl = new User();
 const addressCtrl = new Address();
 
 export function ListPayment({ product, localAddress, authLoading }) {
-  const calculateShipping = (city) =>
-    city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
+  const calculateShipping = (city) => {
+    return city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
+  };
 
   const { loading, accesToken, login, logout, user } = useAuth();
   const { decreaseCart, incrementCart, deleteAllCart } = useCart();
@@ -42,17 +43,15 @@ export function ListPayment({ product, localAddress, authLoading }) {
   const [formData, setFormData] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
 
-  const [envio, setEnvio] = useState(() =>
-    calculateShipping(selectedAddress?.city)
-  );
+  const [envio, setEnvio] = useState("");
 
   const subtotal = product.reduce(
-    (acc, item) => acc + item[0]?.price1 * item.quantity,
+    (acc, item) => acc + item[0]?.product.price1 * item.quantity,
     0
   );
 
   const format = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   const selectecAddress = (address) => {
@@ -62,20 +61,28 @@ export function ListPayment({ product, localAddress, authLoading }) {
     setAddressModalOpen(!isAddressModalOpen);
   };
 
-  const processPayment = async (addressId) => {
+  const processPayment = async (address) => {
     try {
       const response = await paymentCtrl.createPayload(
         product,
-        addressId,
+        address,
         accesToken
       );
       // localStorage.setItem("init_point", response.init_point);
       window.location.href = response.init_point;
+      // window.open(response.init_point, "_blank");
+      // window.location.replace("/"); 
       deleteAllCart();
     } catch (error) {
       console.error("Error en el proceso de pago:", error);
     }
   };
+
+  useEffect(() => {
+    if (selectedAddress?.city) {
+      setEnvio(calculateShipping(selectedAddress.city));
+    }
+  }, [selectedAddress]);
 
   useEffect(() => {
     setSelectedAddress(localAddress?.[0] || null);
@@ -111,11 +118,12 @@ export function ListPayment({ product, localAddress, authLoading }) {
             accesToken
           );
 
-          await processPayment(newAddress.id);
+          await processPayment(newAddress);
           setIsLoading("false");
         } else {
           // Procesar pago directamente si ya hay un usuario logeado
-          const addressId = selectedAddress?.id || localAddress?.[0]?.id;
+          const addressId = selectedAddress || localAddress[0];
+             
           await processPayment(addressId);
           setIsLoading("false");
         }
@@ -194,7 +202,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
               <div className={styles.detalle}>
                 <label className={styles.name}>{item[0]?.name}</label>
                 <p className={styles.price}>
-                  $ {format(item[0]?.price1 * item.quantity)}
+                  $ {format(item[0]?.product.price1 * item.quantity)}
                 </p>
                 <div className={styles.btn}>
                   <AiOutlineMinusCircle

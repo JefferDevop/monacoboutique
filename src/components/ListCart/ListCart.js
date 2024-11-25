@@ -15,17 +15,27 @@ export function ListCart({ product }) {
     new Intl.NumberFormat("es-CO").format(Math.floor(number));
 
   // Cálculo del subtotal y descuentos
-  const subtotal = product.reduce(
-    (acc, item) => acc + item[0]?.price1 * item.quantity,
-    0
-  );
+  const subtotal = product.reduce((acc, item) => {
+    const price =
+      item[0]?.product.price_old > item[0]?.product.price1
+        ? item[0]?.product.price_old
+        : item[0]?.product.price1;
+    return acc + price * item.quantity;
+  }, 0);
 
-  const descuento = product.reduce(
-    (acc, item) =>
-      acc +
-      (item[0]?.product.price_old - item[0]?.product.price1) * item.quantity,
-    0
-  );
+  const descuento = product.reduce((acc, item) => {
+    const priceOld = item[0]?.product.price_old;
+    const price1 = item[0]?.product.price1;
+    const quantity = item.quantity;
+
+    // Si algún valor es inválido o price_old no es mayor que price1, ignorar este producto
+    if (!priceOld || !price1 || !quantity || priceOld <= price1) {
+      return acc;
+    }
+
+    // Acumular el descuento
+    return acc + (priceOld - price1) * quantity;
+  }, 0);
 
   const handleNavigation = (path) => router.push(path);
 
@@ -59,22 +69,36 @@ export function ListCart({ product }) {
               </div>
 
               <div className={styles.price}>
-                <p>Unidad: $ {formatCurrency(item[0]?.price1)}</p>
                 <p>
-                  Subtotal: $ {formatCurrency(item[0]?.price1 * item.quantity)}
+                  Unidad: ${" "}
+                  {formatCurrency(
+                    item[0]?.product.price_old > item[0]?.product.price1
+                      ? item[0]?.product.price_old
+                      : item[0]?.product.price1
+                  )}
                 </p>
-                {item[0]?.product.price_old > 0 && (
-                  <p>
-                    Descuento:{" "}
-                    <u>
-                      ${" "}
-                      {formatCurrency(
-                        (item[0]?.product.price_old - item[0]?.price1) *
-                          item.quantity
-                      )}
-                    </u>
-                  </p>
-                )}
+                <p>
+                  Subtotal: ${" "}
+                  {formatCurrency(
+                    (item[0]?.product.price_old > item[0]?.product.price1
+                      ? item[0]?.product.price_old
+                      : item[0]?.product.price1) * item.quantity
+                  )}
+                </p>
+                {item[0]?.product.price_old > 0 &&
+                  item[0]?.product.price_old > item[0]?.product.price1 && (
+                    <p>
+                      Descuento:{" "}
+                      <u>
+                        ${" "}
+                        {formatCurrency(
+                          (item[0]?.product.price_old -
+                            item[0]?.product.price1) *
+                            item.quantity
+                        )}
+                      </u>
+                    </p>
+                  )}
               </div>
 
               <div className={styles.button}>

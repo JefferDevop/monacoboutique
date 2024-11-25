@@ -171,7 +171,7 @@ export function DetailProduct(props) {
                 <h5> $ {format(parseInt(productData?.price1))}</h5>
               )}
 
-              {productData?.price_old > 0 && (
+              {productData?.price_old > productData?.price1 && (
                 <h6> $ {format(parseInt(productData?.price_old))}</h6>
               )}
 
