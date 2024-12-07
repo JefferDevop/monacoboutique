@@ -20,7 +20,8 @@ export class Auth {
           const result = await response.json();
           return result;
         } catch (error) {
-          throw error;
+          console.log(error);
+          
         }
       }
 

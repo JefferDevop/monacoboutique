@@ -12,8 +12,7 @@ export default function PaymentPage() {
   const { cart, product, loading } = useCart();
   const [localAddress, setLocalAddress] = useState([]);
 
-  console.log(user);
-  
+
   // Comprobar el usuario y loguear si es necesario
   useEffect(() => {
     const handleLoginAndFetchAddress = async () => {

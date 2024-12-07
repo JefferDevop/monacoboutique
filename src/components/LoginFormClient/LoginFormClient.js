@@ -69,15 +69,15 @@ export function LoginFormClient() {
             Continuar
           </Button>
 
-          <Button block outline onClick={() => toggleModal()}>
+          {/* <Button block outline onClick={() => toggleModal()}>
             Crear una cuenta
-          </Button>
+          </Button> */}
         </div>
       </Form>
 
-      <ModalBasic show={isModalOpen} title="Crea una cuenta">
+      {/* <ModalBasic show={isModalOpen} title="Crea una cuenta">
         <Register toggleModal={toggleModal} />
-      </ModalBasic>
+      </ModalBasic> */}
     </>
   );
 }

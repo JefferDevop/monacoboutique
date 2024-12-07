@@ -20,6 +20,8 @@ import { BASE_NAME } from "@/config/constants";
 import { AiFillPlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import styles from "./ListPayment.module.scss";
 import { AddAddress } from "../Address";
+import { LoginFormClient } from "../LoginFormClient";
+
 
 const paymentCtrl = new Payment();
 const authCtrl = new Auth();
@@ -37,6 +39,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
 
   const [isAddressModalOpen, setAddressModalOpen] = useState(false);
   const [isModalOpen2, setModalOpen2] = useState(false);
+  const [isModalOpen3, setModalOpen3] = useState(false);
   const [changeAddress, setChangeAddress] = useState(false);
   const [hasSetInitialAddress, setHasSetInitialAddress] = useState(false);
 
@@ -50,6 +53,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
     0
   );
 
+
   const format = (number) => {
     return number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
@@ -60,6 +64,22 @@ export function ListPayment({ product, localAddress, authLoading }) {
     // setEnvio(calculateEnvio(address.city));
     setAddressModalOpen(!isAddressModalOpen);
   };
+
+
+
+
+
+  const logeo = async (email, password) => {
+    const response = await authCtrl.login({ email, password });
+    if (!response) {
+      toast.warning("El numero de cedula no concuerda con el usuario")
+      return
+    }
+    
+    await login(response.access); // Actualiza el estado de autenticación
+    window.location.replace("/payment");
+  
+  }
 
   const processPayment = async (address) => {
     try {
@@ -93,17 +113,20 @@ export function ListPayment({ product, localAddress, authLoading }) {
     // validationSchema: Yup.object(getValidationSchema()),
     onSubmit: async (formValue) => {
       try {
-        setIsLoading("true");
+        setIsLoading(true);
         if (user.email === "hh@gmail.com") {
           const { email, password } = formValue;
           const newUser = await userCtrl.addUserApi({ email, password });
 
           const value1 = "Ya existe un/a Usuario con este/a Correo.";
           const value2 = newUser?.email;
+        
 
           if (value1 === value2[0]) {
-            toast.warning("Ya existe un/a Usuario con este/a Correo.");
-            setIsLoading("false");
+            
+            logeo(email, password)
+
+            setIsLoading(false);
             return; // Salir del flujo de creación de usuario si el correo ya existe
           }
 
@@ -119,17 +142,17 @@ export function ListPayment({ product, localAddress, authLoading }) {
           );
 
           await processPayment(newAddress);
-          setIsLoading("false");
+          setIsLoading(false);
         } else {
           // Procesar pago directamente si ya hay un usuario logeado
           const addressId = selectedAddress || localAddress[0];
              
           await processPayment(addressId);
-          setIsLoading("false");
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("Error al procesar el pago:", error);
-        setIsLoading("false");
+        setIsLoading(false);
       }
     },
   });
@@ -141,6 +164,12 @@ export function ListPayment({ product, localAddress, authLoading }) {
     // addChange();
     setModalOpen2(!isModalOpen2);
   };
+
+  const toggleModal3 = () => {
+    // addChange();
+    setModalOpen3(!isModalOpen3);
+  };
+
 
   const handleCityChange = (e) => {
     const city = e.target.value;
@@ -300,6 +329,12 @@ export function ListPayment({ product, localAddress, authLoading }) {
       <Modal centered isOpen={isModalOpen2} toggle={toggleModal2}>
         <ModalHeader toggle={toggleModal2}>Nueva Dirección</ModalHeader>
         <AddAddress toggleModal2={toggleModal2} toggleAddress={toggleAddress} />
+        <ModalBody></ModalBody>
+      </Modal>
+
+      <Modal centered isOpen={isModalOpen3} toggle={toggleModal3}>
+        <ModalHeader toggle={toggleModal3}>Inicia sesión</ModalHeader>
+        <LoginFormClient toggleModal2={toggleModal3}  />
         <ModalBody></ModalBody>
       </Modal>
     </div>

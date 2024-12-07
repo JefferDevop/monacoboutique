@@ -5,13 +5,10 @@ export class Payment {
 
     const address = addressData.id;
     
-    
     const bodyData = {
       items,
       address
     };
-
-    console.log("bodyData", bodyData);
     
     
     try {

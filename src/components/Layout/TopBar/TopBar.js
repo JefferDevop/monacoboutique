@@ -38,7 +38,8 @@ export function TopBar({ categories, isLoading }) {
   }
 
   const clearLocalStorage = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    // localStorage.clear();
     alert("Local storage cleared!");
     window.location.reload();
   };
@@ -103,7 +104,7 @@ export function TopBar({ categories, isLoading }) {
         </ModalBody>
 
         <ModalFooter>
-          <Button color="primary" onClick={toggleModal}></Button>
+          <Button color="primary" onClick={clearLocalStorage}></Button>
         </ModalFooter>
       </Modal>
     </div>
