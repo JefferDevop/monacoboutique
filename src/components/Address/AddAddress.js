@@ -11,7 +11,7 @@ import styles from "./Address.module.scss";
 const addressCtrl = new Address();
 
 export function AddAddress(props) {
-  const { toggleModal2, toggleAddress } = props;
+  const { toggleModal2, toggleAddress, addNewAddress } = props;
 
   const { accesToken, user } = useAuth();
 
@@ -21,11 +21,15 @@ export function AddAddress(props) {
     validateOnChange: false,
     onSubmit: async (formValue) => {
       try {
-
-        await addressCtrl.addAddress(formValue, user.id, accesToken);
+        const result = await addressCtrl.addAddress(
+          formValue,
+          user.id,
+          accesToken
+        );
 
         toggleModal2();
         toggleAddress();
+        addNewAddress(result);
         toast.success("Address added successfully");
       } catch (error) {
         toast.error(error.message);

@@ -10,18 +10,16 @@ import {
   ModalBody,
   ModalHeader,
   Input,
-  Label,
   Form,
   FormGroup,
 } from "reactstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { BASE_NAME } from "@/config/constants";
-import { AiFillPlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
+// import { AiFillPlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import styles from "./ListPayment.module.scss";
 import { AddAddress } from "../Address";
 import { LoginFormClient } from "../LoginFormClient";
-
 
 const paymentCtrl = new Payment();
 const authCtrl = new Auth();
@@ -29,21 +27,24 @@ const userCtrl = new User();
 const addressCtrl = new Address();
 
 export function ListPayment({ product, localAddress, authLoading }) {
+  const [address, setAddresses] = useState(localAddress);
   const calculateShipping = (city) => {
     return city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
   };
 
-  const { loading, accesToken, login, logout, user } = useAuth();
-  const { decreaseCart, incrementCart, deleteAllCart } = useCart();
+  const { accesToken, login, logout, user } = useAuth();
+  // const { decreaseCart, incrementCart, deleteAllCart } = useCart();
+  const { deleteAllCart } = useCart();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [isAddressModalOpen, setAddressModalOpen] = useState(false);
   const [isModalOpen2, setModalOpen2] = useState(false);
   const [isModalOpen3, setModalOpen3] = useState(false);
   const [changeAddress, setChangeAddress] = useState(false);
-  const [hasSetInitialAddress, setHasSetInitialAddress] = useState(false);
+  // const [hasSetInitialAddress, setHasSetInitialAddress] = useState(false);
 
-  const [formData, setFormData] = useState(null);
+  // const [formData, setFormData] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
 
   const [envio, setEnvio] = useState("");
@@ -52,7 +53,6 @@ export function ListPayment({ product, localAddress, authLoading }) {
     (acc, item) => acc + item[0]?.product.price1 * item.quantity,
     0
   );
-
 
   const format = (number) => {
     return number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -65,21 +65,16 @@ export function ListPayment({ product, localAddress, authLoading }) {
     setAddressModalOpen(!isAddressModalOpen);
   };
 
-
-
-
-
   const logeo = async (email, password) => {
     const response = await authCtrl.login({ email, password });
     if (!response) {
-      toast.warning("El numero de cedula no concuerda con el usuario")
-      return
+      toast.warning("El numero de cedula no concuerda con el usuario");
+      return;
     }
-    
+
     await login(response.access); // Actualiza el estado de autenticación
     window.location.replace("/payment");
-  
-  }
+  };
 
   const processPayment = async (address) => {
     try {
@@ -91,7 +86,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
       // localStorage.setItem("init_point", response.init_point);
       window.location.href = response.init_point;
       // window.open(response.init_point, "_blank");
-      // window.location.replace("/"); 
+      // window.location.replace("/");
       deleteAllCart();
     } catch (error) {
       console.error("Error en el proceso de pago:", error);
@@ -105,11 +100,11 @@ export function ListPayment({ product, localAddress, authLoading }) {
   }, [selectedAddress]);
 
   useEffect(() => {
-    setSelectedAddress(localAddress?.[0] || null);
-  }, [localAddress]);
+    setSelectedAddress(address?.[0] || null);
+  }, [address]);
 
   const formik = useFormik({
-    initialValues: getInitialValues(selectedAddress || localAddress),
+    initialValues: getInitialValues(selectedAddress || address),
     // validationSchema: Yup.object(getValidationSchema()),
     onSubmit: async (formValue) => {
       try {
@@ -120,11 +115,9 @@ export function ListPayment({ product, localAddress, authLoading }) {
 
           const value1 = "Ya existe un/a Usuario con este/a Correo.";
           const value2 = newUser?.email;
-        
 
           if (value1 === value2[0]) {
-            
-            logeo(email, password)
+            logeo(email, password);
 
             setIsLoading(false);
             return; // Salir del flujo de creación de usuario si el correo ya existe
@@ -145,8 +138,8 @@ export function ListPayment({ product, localAddress, authLoading }) {
           setIsLoading(false);
         } else {
           // Procesar pago directamente si ya hay un usuario logeado
-          const addressId = selectedAddress || localAddress[0];
-             
+          const addressId = selectedAddress || address[0];
+
           await processPayment(addressId);
           setIsLoading(false);
         }
@@ -156,6 +149,10 @@ export function ListPayment({ product, localAddress, authLoading }) {
       }
     },
   });
+
+  const addNewAddress = (newAddress) => {
+    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
+  };
 
   const toggleAddressModal = () => setAddressModalOpen(!isAddressModalOpen);
   const toggleAddress = () => setChangeAddress(!changeAddress);
@@ -169,7 +166,6 @@ export function ListPayment({ product, localAddress, authLoading }) {
     // addChange();
     setModalOpen3(!isModalOpen3);
   };
-
 
   const handleCityChange = (e) => {
     const city = e.target.value;
@@ -197,7 +193,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
       )}
       <h2>Finalizar Compra</h2>
       <Form onSubmit={formik.handleSubmit}>
-        {localAddress?.length < 1 && (
+        {address?.length < 1 && (
           <>
             {Object.keys(fieldLabels).map((field) => (
               <FormGroup key={field}>
@@ -233,17 +229,8 @@ export function ListPayment({ product, localAddress, authLoading }) {
                 <p className={styles.price}>
                   $ {format(item[0]?.product.price1 * item.quantity)}
                 </p>
-                <div className={styles.btn}>
-                  <AiOutlineMinusCircle
-                    size={25}
-                    onClick={() => decreaseCart(item[0]?.codigo)}
-                  />
-                  <h5>{item.quantity}</h5>
-                  <AiFillPlusCircle
-                    size={25}
-                    onClick={() => incrementCart(item[0]?.codigo)}
-                  />
-                </div>
+
+                <p> Cantidad: {item.quantity}</p>
               </div>
               <hr />
             </div>
@@ -287,8 +274,8 @@ export function ListPayment({ product, localAddress, authLoading }) {
         <ModalBody>
           <div className={styles.modalContent}>
             <ul>
-              {localAddress &&
-                localAddress.map((addres, index) => (
+              {address &&
+                address.map((addres, index) => (
                   <div key={index}>
                     <li onClick={() => selectecAddress(addres)}>
                       <h6>{addres.title}</h6>
@@ -328,13 +315,17 @@ export function ListPayment({ product, localAddress, authLoading }) {
 
       <Modal centered isOpen={isModalOpen2} toggle={toggleModal2}>
         <ModalHeader toggle={toggleModal2}>Nueva Dirección</ModalHeader>
-        <AddAddress toggleModal2={toggleModal2} toggleAddress={toggleAddress} />
+        <AddAddress
+          toggleModal2={toggleModal2}
+          toggleAddress={toggleAddress}
+          addNewAddress={addNewAddress}
+        />
         <ModalBody></ModalBody>
       </Modal>
 
       <Modal centered isOpen={isModalOpen3} toggle={toggleModal3}>
         <ModalHeader toggle={toggleModal3}>Inicia sesión</ModalHeader>
-        <LoginFormClient toggleModal2={toggleModal3}  />
+        <LoginFormClient toggleModal2={toggleModal3} />
         <ModalBody></ModalBody>
       </Modal>
     </div>

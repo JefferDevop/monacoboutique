@@ -6,7 +6,7 @@ import {
   DetailProduct,
   MenuAlterno,
 } from "@/components";
-import { Footer } from "@/components";
+
 
 export default function ProductPage({productSlug}) {  
 

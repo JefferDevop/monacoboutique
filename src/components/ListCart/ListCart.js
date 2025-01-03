@@ -1,14 +1,78 @@
+import React, { useState, useEffect } from "react";
 import { useCart } from "@/hooks/useCart";
 import { Button, CardImg } from "reactstrap";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { AiFillPlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import { BsTrash3 } from "react-icons/bs";
 import styles from "./ListCart.module.scss";
 import { BASE_NAME } from "@/config/constants";
+import { Products } from "@/api/products";
+
+const productCtrl = new Products();
 
 export function ListCart({ product }) {
+  const [productCode, setProductCode] = useState(null);
   const { decreaseCart, incrementCart, deleteCart, deleteAllCart } = useCart();
   const router = useRouter();
+
+  // Consulta para verificar el stock del producto
+  const {
+    data: stockData,
+    isLoading: isCheckingStock,
+    refetch: checkStock,
+  } = useQuery({
+    queryKey: ["stockData", productCode],
+    queryFn: () => productCtrl.getProductByCode(productCode),
+    enabled: !!productCode,
+    staleTime: 1000 * 60 * 1,
+    cacheTime: 1000 * 60 * 2,
+  });
+
+  const handleIncrement = async (selectedProduct) => {
+    const newProductCode = selectedProduct.codigo;
+
+    if (newProductCode !== productCode) {
+      setProductCode(newProductCode);
+      return;
+    }
+
+    if (isCheckingStock) {
+      alert("Verificando disponibilidad...");
+      return;
+    }
+
+    try {
+      const { data: refreshedStock } = await checkStock();
+
+      const availableQuantity = refreshedStock[0]?.qty_available || 0;
+
+      // Obtener la cantidad del producto en el carrito desde localStorage
+      const cartProduct = JSON.parse(localStorage.getItem("cart_monaco")) || [];
+      const productInCart = cartProduct.find(
+        (item) => item.id === newProductCode
+      );
+
+      const cartQuantity = availableQuantity - productInCart.quantity;
+
+
+      // Verificar si la cantidad en el carrito más la cantidad disponible es mayor a 0
+      if (cartQuantity > 0) {
+        incrementCart(newProductCode); // Incrementar carrito
+      } else {
+        alert("No hay stock disponible para este producto.");
+      }
+    } catch (error) {
+      console.error("Error al verificar el stock:", error);
+      alert("No se pudo verificar el stock. Inténtalo de nuevo más tarde.");
+    }
+  };
+
+  useEffect(() => {
+    if (productCode) {
+      checkStock();
+    }
+  }, [productCode, checkStock]);
 
   // Función para formatear los números a formato colombiano (COP)
   const formatCurrency = (number) =>
@@ -108,7 +172,7 @@ export function ListCart({ product }) {
                 />
                 <p>{item.quantity}</p>
                 <AiFillPlusCircle
-                  onClick={() => incrementCart(item[0].codigo)}
+                  onClick={() => handleIncrement(item[0])}
                   size={20}
                 />
               </div>

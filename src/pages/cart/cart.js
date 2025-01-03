@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useCallback } from "react";
+//import React, { useEffect, useState, useCallback } from "react";
+
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks";
-import { Products } from "@/api/products";
 import { ListCart, NotFound, Separator } from "@/components";
 import { BasicLayout } from "@/layouts";
 
-const productCtrl = new Products();
 
 export default function CartPage() {
   const { user } = useAuth();
   const { cart, product, loading } = useCart();
   // const [product, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
+  //const [loadingProducts, setLoadingProducts] = useState(true);
   const hasProducts = product.length > 0;
+
   
   return (
     <BasicLayout>
@@ -20,7 +20,7 @@ export default function CartPage() {
       {loading ? (
         <h1>Cargando...</h1>
       ) : hasProducts ? (
-        <ListCart product={product} />
+        <ListCart product={product}  />
       ) : (
         <NotFound title="Uppss... en este momento no hay productos en el Carrito" />
       )}
