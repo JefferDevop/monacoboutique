@@ -49,6 +49,10 @@ export function ListPayment({ product, localAddress, authLoading }) {
 
   const [envio, setEnvio] = useState("");
 
+  useEffect(() => {
+    setAddresses(localAddress);
+  }, [localAddress]);
+
   const subtotal = product.reduce(
     (acc, item) => acc + item[0]?.product.price1 * item.quantity,
     0
@@ -57,6 +61,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
   const format = (number) => {
     return number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
+
 
   const selectecAddress = (address) => {
     setSelectedAddress(address);

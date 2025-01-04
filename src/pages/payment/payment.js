@@ -34,6 +34,9 @@ export default function PaymentPage() {
 
   const hasProducts = product && product.length > 0;
 
+  
+  
+
   return (
     <BasicLayout>
       <Separator />
@@ -41,7 +44,7 @@ export default function PaymentPage() {
         <h1>Cargando ...</h1>
       ) : hasProducts ? (
         <>
-          <ListPayment product={product} localAddress={localAddress} authLoading={authLoading} />
+          <ListPayment product={product} localAddress={localAddress} authLoading={authLoading} loading={loading} />
         </>
       ) : (
         <NotFound title="Uppss... en este momento no hay productos para pagar" />
