@@ -21,6 +21,8 @@ export function Available({ products = [] }) {
     return acc;
   }, {});
 
+  console.log(uniqueProducts);
+
   const formatCurrency = (number) => 
     new Intl.NumberFormat('es-CO').format(Math.round(number));
 
@@ -41,7 +43,7 @@ export function Available({ products = [] }) {
 
 // Componente para productos disponibles
 const ProductCard = ({ product, formatCurrency }) => {
-  const { name_extend, price1, price_old } = product.product;
+  const { name_extend, price1, price_old, images, image_alterna } = product.product;
 
   return (
     <div className={styles.image}>
@@ -49,7 +51,7 @@ const ProductCard = ({ product, formatCurrency }) => {
       <Link href={`/${product.slug}`}>
         <Image
           alt={name_extend}
-          src={BASE_NAME + (product.images || product.image_alterna)}
+          src={BASE_NAME + (images || image_alterna)}
           width={130}
           height={180}
           quality={75}
