@@ -3,6 +3,7 @@ import { BASE_API } from "../config/constants";
 export class Products {
 
   async getProducts() {
+    
     try {
       const url = `${BASE_API}/api/products/?active=true`;
       const response = await fetch(url);
@@ -31,6 +32,8 @@ export class Products {
   }
 
   async getProductByCode(codigo) {
+    
+    
     const productsFilter = `codigo=${codigo}`;
     try {
       const url = `${BASE_API}/api/inventory/?${productsFilter}`;
@@ -65,6 +68,7 @@ export class Products {
   }
 
   async getInventoryBySlug(slug) {
+    
     try {
       const productFilter = `slug=${slug}`;
 

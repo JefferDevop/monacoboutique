@@ -21,7 +21,6 @@ export function Available({ products = [] }) {
     return acc;
   }, {});
 
-  console.log(uniqueProducts);
 
   const formatCurrency = (number) => 
     new Intl.NumberFormat('es-CO').format(Math.round(number));
@@ -70,7 +69,7 @@ const SoldOutCard = ({ product }) => (
     <div className={styles.offer}><h5>AGOTADO</h5></div>
     <Image
       alt={product.product.name_extend}
-      src={BASE_NAME + (product.images || product.image_alterna)}
+      src={BASE_NAME + (product.product.images || product.product.image_alterna)}
       width={500}
       height={500}
       quality={75}

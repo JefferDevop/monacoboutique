@@ -32,6 +32,9 @@ export function ListPayment({ product, localAddress, authLoading }) {
     return city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
   };
 
+  console.log("-----", product);
+  
+
   const { accesToken, login, logout, user } = useAuth();
   // const { decreaseCart, incrementCart, deleteAllCart } = useCart();
   const { deleteAllCart } = useCart();
