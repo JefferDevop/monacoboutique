@@ -32,9 +32,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
     return city?.trim().toLowerCase() === "cali" ? 12000 : 15000;
   };
 
-  console.log("-----", product);
   
-
   const { accesToken, login, logout, user } = useAuth();
   // const { decreaseCart, incrementCart, deleteAllCart } = useCart();
   const { deleteAllCart } = useCart();
@@ -85,6 +83,8 @@ export function ListPayment({ product, localAddress, authLoading }) {
   };
 
   const processPayment = async (address) => {
+    console.log('--oo--', product);
+    
     try {
       const response = await paymentCtrl.createPayload(
         product,
@@ -92,7 +92,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
         accesToken
       );
       // localStorage.setItem("init_point", response.init_point);
-      window.location.href = response.init_point;
+      // window.location.href = response.init_point;
       // window.open(response.init_point, "_blank");
       // window.location.replace("/");
       deleteAllCart();

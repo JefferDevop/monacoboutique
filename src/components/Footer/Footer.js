@@ -45,11 +45,11 @@ export function Footer() {
       </div> */}
       <div>
         <p className={styles.copyright}>
-        MÓNACO BOUTIQUE <br/> Copyright © 2023. Todos los derechos
+        MÓNACO BOUTIQUE <br/> Copyright © 2025. Todos los derechos
           reservados <br />
           Desarrollado por: SupraInnovations <br />
           Cel: 300 530 9990
-          Versión 6.1.0
+          Versión 6.8.0
         </p>
       </div>
     </div>

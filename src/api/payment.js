@@ -3,7 +3,6 @@ import { BASE_API } from "../config/constants";
 export class Payment {
   async createPayload(items, addressData, token) {
 
- 
     const address = addressData.id;
     
     const bodyData = {

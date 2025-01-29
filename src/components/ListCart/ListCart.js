@@ -31,8 +31,6 @@ export function ListCart({ product }) {
 
   const handleIncrement = async (selectedProduct) => {
     const newProductCode = selectedProduct.codigo;
-
-    console.log(selectedProduct);
     
 
     if (newProductCode !== productCode) {

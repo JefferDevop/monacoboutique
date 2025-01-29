@@ -9,33 +9,52 @@ export function ChangePolicies() {
       <div className={styles.police}>
         <br />
         <p>
-          Esta política de cambio establece las condiciones bajo las cuales se
-          realizarán los cambios en los productos y servicios ofrecidos por la
-          empresa.
+          En <strong>Mónaco Boutique</strong>, queremos garantizar tu satisfacción. Por ello,
+          hemos establecido las siguientes políticas para cambios de productos:
         </p>
-
+<br/>
         <ul>
-          <li>No se hace devolución de dinero</li>
+          <strong>DEVOLUCIONES DE DINERO</strong>
           <li>
-            Se cambia si la prenda lleva 8 días después de haber sido entregada
+            No realizamos devoluciones de dinero en ninguna circunstancia.
           </li>
+          <strong>PLAZOS PARA CAMBIOS</strong>
           <li>
-            La prenda se cambia si es por IMPERFECTO o por TALLA: Podrás
-            cambiarlo por REFERENCIA o por otra TALLA
+            Dispones de 8 días hábiles para solicitar el cambio de una prenda,
+            contados a partir de la fecha de entrega del producto.
           </li>
+          <strong>OPCIONES DE CAMBIO</strong>
           <li>
-            ⁠Monaco boutique se hace responsable del domicilio ÚNICAMENTE si la
-            prenda tiene algún imperfecto
+            <li>Las prendas pueden ser cambiadas por:</li>
+            <ul>
+              <li>Otra talla del mismo modelo</li>
+              <li>
+                Otra referencia de igual o mayor valor (cubriendo la diferencia
+                si aplica)
+              </li>
+            </ul>
           </li>
+          <strong> CONDICIONES PARA ACEPTAR CAMBIOS</strong>
           <li>
-            Las prendas que hayan sido lavadas, usadas, dañadas o con algún tipo
-            de arreglo NO tienen cambio
+            El producto debe estar en perfecto estado, tal como fue entregado.
+            No se aceptarán cambios en prendas que: Hayan sido lavadas, usadas o
+            dañadas. Presenten arreglos o modificaciones realizadas por el
+            cliente.
           </li>
-        </ul>
-
-        <strong>⁠PRODUCTOS EN PROMOCIÓN</strong>
-        <ul>
-          <li>⁠Los productos en promoción NO tienen cambio</li>
+          <li>Los productos en promoción no tienen cambio.</li>
+<br/>
+          <p>
+            <strong>Mónaco Boutique</strong> cubrirá los costos de envío únicamente en los casos
+            en los que la prenda presente defectos de fabricación. Si el cambio
+            se debe a talla o preferencia, el cliente será responsable de los
+            costos de envío asociados.             
+            <br/>
+            <br/>
+            Nota: Estas políticas están diseñadas
+            para garantizar una experiencia justa y transparente para todos
+            nuestros clientes. Para iniciar un proceso de cambio, contáctanos a
+            través de nuestros canales de atención al cliente.
+          </p>
         </ul>
       </div>
     </>
