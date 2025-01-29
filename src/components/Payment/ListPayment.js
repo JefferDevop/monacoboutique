@@ -83,7 +83,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
   };
 
   const processPayment = async (address) => {
-    console.log('--oo--', product);
+
     
     try {
       const response = await paymentCtrl.createPayload(
@@ -92,7 +92,7 @@ export function ListPayment({ product, localAddress, authLoading }) {
         accesToken
       );
       // localStorage.setItem("init_point", response.init_point);
-      // window.location.href = response.init_point;
+      window.location.href = response.init_point;
       // window.open(response.init_point, "_blank");
       // window.location.replace("/");
       deleteAllCart();
