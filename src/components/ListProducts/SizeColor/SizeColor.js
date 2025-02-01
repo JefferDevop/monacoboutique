@@ -196,10 +196,9 @@ export function SizeColor({ propductTC, getOffer, toggle }) {
         )}
 
         <div>
-          <Button          
+          <Button
             block
             onClick={handleAddToCartClick}
-          
           >
             Agregar al Carrito
           </Button>

@@ -7,7 +7,7 @@ import { CiRead } from "react-icons/ci";
 export default function Delivery() {
   return (
     <div className={styles.policies}>
-              <strong>
+              {/* <strong>
                 <p>TIEMPO DE ENTREGA</p>
               </strong>
               <ul>
@@ -17,7 +17,15 @@ export default function Delivery() {
                 <li>
                   <p>Nacional, de 4 a 5 días</p>
                 </li>
-              </ul>
+              </ul> */}
+
+              <Link href="/deliverytime">
+                <p>
+                  <strong>
+                  TIEMPOS DE ENTREGA <CiRead size={30} />
+                  </strong>
+                </p>
+              </Link>
 
               <Link href="/police">
                 <p>

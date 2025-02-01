@@ -27,9 +27,21 @@ export class Payment {
       const result = await response.json();
 
       if (response.status !== 201) {
-        throw new Error("Occurio un error al crear el pago");
-      }      
-      
+        if (response.status === 400 && result.error === "Stock insuficiente para algunos productos") {
+            // Mensaje de error con los productos que tienen stock insuficiente
+            console.error("Productos con stock insuficiente:", result.productos);
+            
+            alert("Algunos productos no tienen stock suficiente:\n" + 
+                result.productos.map(prod => `Nombre: ${prod.name}, Disponible: ${prod.disponible}, Solicitado: ${prod.solicitado}`).join("\n")
+            );
+
+            return; // Detiene la ejecución si hay error de stock
+        } else {
+            throw new Error("Ocurrió un error al crear el pago");
+        }
+    }
+
+
       return result;
     } catch (error) {
       throw error;

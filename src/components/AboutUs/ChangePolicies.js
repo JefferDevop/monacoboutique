@@ -5,7 +5,7 @@ import styles from "./AboutUs.module.scss";
 export function ChangePolicies() {
   return (
     <>
-      <h3>POLITICAS DE CAMBIO</h3>
+      <h3>Politicas de Cambio - Mónaco Boutique</h3>
       <div className={styles.police}>
         <br />
         <p>
